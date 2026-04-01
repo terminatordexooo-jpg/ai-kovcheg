@@ -1892,11 +1892,7 @@
                 scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=10%', scrub: true }
             });
 
-            // Video overlay darkens near end
-            gsap.to('#hero-video-wrapper', {
-                opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: '+=240%', end: '+=300%', scrub: 0.3 }
-            });
+            // Video stays visible — no fade to black
         }
 
         // Wait for video to be ready
