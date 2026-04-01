@@ -1915,6 +1915,9 @@
         }
         requestAnimationFrame(rafLoop);
 
+        // Force ScrollTrigger to recalculate after hero height change
+        ScrollTrigger.refresh();
+
         // =============================================
         // === CREDIBILITY BAR — SCRUB scale slam ===
         // =============================================
