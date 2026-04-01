@@ -433,7 +433,7 @@
     <section id="hero-section" class="hero-section h-screen min-h-[700px] flex items-center pt-20 pb-10 px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0;">
-            <video id="hero-video-bg" muted playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
+            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
                 <source src="hero_bg.mp4" type="video/mp4">
             </video>
             <!-- Dark overlay so text is readable -->
@@ -1838,91 +1838,37 @@
         gsap.to('#scroll-dot', { y: 8, duration: 1, repeat: -1, yoyo: true, ease: 'power1.inOut' });
 
         // =============================================
-        // === SCROLL-DRIVEN VIDEO (Apple style) ===
+        // === HERO SCROLL EFFECTS (video autoplay + scroll parallax) ===
         // =============================================
-        const heroVideo = document.getElementById('hero-video-bg');
-        const heroSection = document.getElementById('hero-section');
-
-        function initScrollVideo() {
-            if (!heroVideo || !heroVideo.duration) return;
-            heroVideo.pause();
-            heroVideo.currentTime = 0;
-
-            // Pin hero, scrub video frame-by-frame
-            ScrollTrigger.create({
-                trigger: heroSection,
-                start: 'top top',
-                end: '+=200%',
-                pin: true,
-                scrub: 0.3,
-                onUpdate: (self) => {
-                    if (heroVideo.duration) {
-                        heroVideo.currentTime = heroVideo.duration * self.progress;
-                    }
-                }
-            });
-
-            // Text fades out quickly
-            gsap.to('#hero-section .space-y-10', {
-                y: -150, opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=60%', scrub: 0.3 }
-            });
-
-            // Right mockup slides away
-            gsap.to('.hero-scale-in', {
-                x: 200, opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=50%', scrub: 0.3 }
-            });
-
-            // Parallax cards drift
-            gsap.to('.hero-parallax-card', {
-                y: -200, opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=50%', scrub: 0.3 }
-            });
-
-            // Lightning fades
-            gsap.to('#lightning-canvas', {
-                opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=30%', scrub: 0.3 }
-            });
-
-            // Scroll indicator hides fast
-            gsap.to('#scroll-down-indicator', {
-                opacity: 0, y: -20,
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=10%', scrub: true }
-            });
-
-            // Video stays visible — no fade to black
-        }
-
-        // Wait for video to be ready — multiple fallbacks
-        if (heroVideo) {
-            let scrollVideoInitialized = false;
-            function tryInit() {
-                if (scrollVideoInitialized) return;
-                if (heroVideo.duration && heroVideo.duration > 0) {
-                    scrollVideoInitialized = true;
-                    initScrollVideo();
-                    console.log('Scroll video initialized! Duration:', heroVideo.duration);
-                }
-            }
-            heroVideo.addEventListener('loadedmetadata', tryInit);
-            heroVideo.addEventListener('loadeddata', tryInit);
-            heroVideo.addEventListener('canplay', tryInit);
-            if (heroVideo.readyState >= 1) tryInit();
-            // Fallback: keep checking every 500ms
-            const checkInterval = setInterval(() => {
-                if (scrollVideoInitialized) { clearInterval(checkInterval); return; }
-                tryInit();
-            }, 500);
-            // Final fallback after 5s — force load
-            setTimeout(() => {
-                if (!scrollVideoInitialized) {
-                    heroVideo.load();
-                    heroVideo.addEventListener('loadedmetadata', tryInit);
-                }
-            }, 5000);
-        }
+        // Video autoplays — scroll adds zoom + parallax on top
+        gsap.to('#hero-video-bg', {
+            scale: 1.4, y: -120, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: 'top top', end: 'bottom top', scrub: 1 }
+        });
+        gsap.to('#hero-video-wrapper', {
+            opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: '50% top', end: '100% top', scrub: 1 }
+        });
+        gsap.to('#lightning-canvas', {
+            y: -200, opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: 'top top', end: 'bottom top', scrub: 1 }
+        });
+        gsap.to('#scroll-down-indicator', {
+            opacity: 0, y: -20,
+            scrollTrigger: { trigger: '#hero-section', start: '5% top', end: '15% top', scrub: true }
+        });
+        gsap.to('#hero-section .space-y-10', {
+            y: -200, opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: '10% top', end: '60% top', scrub: 1 }
+        });
+        gsap.to('.hero-scale-in', {
+            x: 200, opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: '10% top', end: '50% top', scrub: 1 }
+        });
+        gsap.to('#hero-section', {
+            scale: 0.92, borderRadius: '40px', ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: '60% top', end: 'bottom top', scrub: 1 }
+        });
 
         // =============================================
         // === CREDIBILITY BAR — SCRUB scale slam ===
