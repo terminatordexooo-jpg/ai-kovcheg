@@ -433,9 +433,7 @@
     <section id="hero-section" class="hero-section h-screen min-h-[700px] flex items-center pt-20 pb-10 px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0;">
-            <video id="hero-video-bg" muted playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
-                <source src="hero_bg.mp4" type="video/mp4">
-            </video>
+            <img id="hero-bg-img" src="hero_source.jpg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" alt="">
             <!-- Dark overlay so text is readable -->
             <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/50 via-[#050505]/30 to-[#050505]/90"></div>
         </div>
@@ -1838,88 +1836,43 @@
         gsap.to('#scroll-dot', { y: 8, duration: 1, repeat: -1, yoyo: true, ease: 'power1.inOut' });
 
         // =============================================
-        // === APPLE-STYLE SCROLL-DRIVEN VIDEO ===
+        // === HERO SCROLL PARALLAX (image-based) ===
         // =============================================
-        const heroVideo = document.getElementById('hero-video-bg');
-        const heroSection = document.getElementById('hero-section');
-
-        // Wait for video metadata to load, then set up scroll-driven playback
-        function setupScrollVideo() {
-            if (!heroVideo || !heroVideo.duration) return;
-
-            const videoDuration = heroVideo.duration;
-            heroVideo.pause(); // Stop autoplay — scroll controls playback
-            heroVideo.currentTime = 0;
-
-            // PINNED hero — video plays frame by frame as you scroll
-            const heroScrollTL = gsap.timeline({
-                scrollTrigger: {
-                    trigger: heroSection,
-                    start: 'top top',
-                    end: '+=300%', // 3x viewport height of scroll to play full video
-                    pin: true,
-                    scrub: 0.5, // Smooth scrub
-                    anticipatePin: 1,
-                    onUpdate: (self) => {
-                        // Scrub video currentTime based on scroll progress
-                        const targetTime = videoDuration * self.progress;
-                        heroVideo.currentTime = targetTime;
-                    }
-                }
-            });
-
-            // Phase 1 (0-30%): Text is visible, video plays in background
-            // Phase 2 (30-50%): Text fades out, video becomes prominent
-            heroScrollTL.to('#hero-section .space-y-10', {
-                y: -200, opacity: 0, scale: 0.95, duration: 0.3, ease: 'power2.in'
-            }, 0.25);
-
-            // Right mockup slides away
-            heroScrollTL.to('.hero-scale-in', {
-                x: 300, opacity: 0, duration: 0.25, ease: 'power2.in'
-            }, 0.25);
-
-            // Parallax cards drift away
-            heroScrollTL.to('.hero-parallax-card', {
-                y: -200, opacity: 0, stagger: 0.05, duration: 0.2, ease: 'power2.in'
-            }, 0.25);
-
-            // Phase 3 (50-70%): Video zooms in dramatically
-            heroScrollTL.to('#hero-video-bg', {
-                scale: 1.5, ease: 'none', duration: 0.4
-            }, 0.3);
-
-            // Phase 4 (70-90%): Overlay darkens, video fades
-            heroScrollTL.to('#hero-video-wrapper', {
-                opacity: 0, duration: 0.25, ease: 'power2.in'
-            }, 0.7);
-
-            // Lightning fades
-            heroScrollTL.to('#lightning-canvas', {
-                opacity: 0, y: -150, duration: 0.4, ease: 'none'
-            }, 0.3);
-
-            // Scroll indicator hides immediately
-            heroScrollTL.to('#scroll-down-indicator', {
-                opacity: 0, y: -20, duration: 0.1
-            }, 0.05);
-
-            // Phase 5 (90-100%): Section shrinks into a card shape
-            heroScrollTL.to(heroSection, {
-                scale: 0.92, borderRadius: '40px', duration: 0.15, ease: 'none'
-            }, 0.85);
-        }
-
-        // Try to set up immediately, or wait for loadedmetadata
-        if (heroVideo && heroVideo.readyState >= 1) {
-            setupScrollVideo();
-        } else if (heroVideo) {
-            heroVideo.addEventListener('loadedmetadata', setupScrollVideo);
-            // Fallback: also try after a short delay in case event was missed
-            setTimeout(() => {
-                if (heroVideo.duration) setupScrollVideo();
-            }, 2000);
-        }
+        // Background image zooms + parallax on scroll
+        gsap.to('#hero-bg-img', {
+            scale: 1.3, y: -100, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: 'top top', end: 'bottom top', scrub: 1 }
+        });
+        // Overlay darkens on scroll
+        gsap.to('#hero-video-wrapper', {
+            opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: '40% top', end: '90% top', scrub: 1 }
+        });
+        // Lightning fades
+        gsap.to('#lightning-canvas', {
+            y: -200, opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: 'top top', end: 'bottom top', scrub: 1 }
+        });
+        // Scroll indicator hides
+        gsap.to('#scroll-down-indicator', {
+            opacity: 0, y: -20,
+            scrollTrigger: { trigger: '#hero-section', start: '5% top', end: '15% top', scrub: true }
+        });
+        // Text slides up and fades
+        gsap.to('#hero-section .space-y-10', {
+            y: -150, opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: '15% top', end: '60% top', scrub: 1 }
+        });
+        // Right mockup slides away
+        gsap.to('.hero-scale-in', {
+            x: 200, opacity: 0, ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: '15% top', end: '50% top', scrub: 1 }
+        });
+        // Hero section shrinks into card on exit
+        gsap.to('#hero-section', {
+            scale: 0.92, borderRadius: '40px', ease: 'none',
+            scrollTrigger: { trigger: '#hero-section', start: '60% top', end: 'bottom top', scrub: 1 }
+        });
 
         // =============================================
         // === CREDIBILITY BAR — SCRUB scale slam ===
