@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-КОВЧЕГ — Мастерство ИИ для предпринимателей</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis removed for performance -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        :root {
+            --emerald: #10B981;
+            --emerald-glow: rgba(16, 185, 129, 0.15);
+            --bg-primary: #050505;
+            --text-primary: #EBEBEB;
+            --text-secondary: rgba(255, 255, 255, 0.5);
+            --gold-accent: #D4AF37;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .font-display {
+            font-family: 'Newsreader', serif;
+            letter-spacing: -0.04em;
+            line-height: 0.9;
+        }
+
+        .font-label {
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .emerald-pulse {
+            animation: pulse-emerald 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes pulse-emerald {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .morph-blob {
+            animation: morphing 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes morphing {
+            0% { border-radius: 40% 60% 60% 40% / 70% 30% 70% 30%; transform: scale(1) translate(0, 0); }
+            100% { border-radius: 60% 40% 40% 60% / 30% 70% 30% 70%; transform: scale(1.1) translate(5%, 5%); }
+        }
+
+        .shimmer-border {
+            position: relative;
+        }
+
+        .shimmer-border::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.3), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 4s linear infinite;
+            z-index: -1;
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .shimmer-border-gold::after {
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .nav-link-hover::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background-color: var(--emerald);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(-50%);
+        }
+
+        .nav-link-hover:hover::after {
+            width: 100%;
+        }
+
+        .spotlight-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spotlight-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16, 185, 129, 0.08), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .spotlight-card:hover::before {
+            opacity: 1;
+        }
+
+        .boarding-pass-mask {
+            mask-image: radial-gradient(circle at 100% 50%, transparent 20px, black 21px);
+            -webkit-mask-image: radial-gradient(circle at 100% 50%, transparent 20px, black 21px);
+        }
+
+        .accordion-content {
+            grid-template-rows: 0fr;
+            display: grid;
+            transition: grid-template-rows 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .accordion-item[open] .accordion-content {
+            grid-template-rows: 1fr;
+        }
+
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-on-scroll.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gradient-text-shift {
+            background: linear-gradient(90deg, #EBEBEB, #10B981, #EBEBEB);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShift 8s linear infinite;
+        }
+
+        @keyframes textShift {
+            to { background-position: 200% center; }
+        }
+
+        .logo-box {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo-box:hover {
+            transform: rotate(360deg);
+        }
+
+        .energy-grid {
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px;
+        }
+
+        #lightning-canvas {
+            background: transparent;
+        }
+
+        /* Hero scroll animations */
+        .hero-section {
+            position: relative;
+        }
+        .hero-title-line {
+            display: block;
+            overflow: hidden;
+        }
+        .hero-title-line-inner {
+            display: block;
+            will-change: transform;
+        }
+        .hero-fade-up {
+            will-change: transform, opacity;
+        }
+        .hero-parallax-card {
+            will-change: transform;
+        }
+        .hero-scale-in {
+            will-change: transform, opacity;
+        }
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            opacity: 0;
+            animation: scrollBounce 2s ease-in-out infinite;
+        }
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+        .hero-stagger-item {
+            will-change: transform, opacity;
+        }
+
+        /* Scroll progress bar */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #10B981, #34D399);
+            z-index: 9999;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Active nav link */
+        .nav-link-hover.nav-active {
+            color: white !important;
+        }
+        .nav-link-hover.nav-active::after {
+            width: 100% !important;
+        }
+
+        /* 3D tilt for spotlight cards */
+        .spotlight-card {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Pricing card hover lift */
+        .pricing-lift {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+        .pricing-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Counter animation helper */
+        .counter-animated {
+            display: inline-block;
+        }
+
+        /* Value stack line slide-in */
+        .value-line {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .value-line.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Weekly cycle step pulse */
+        .step-circle {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .step-circle:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+        }
+
+        /* === ADVANCED SCROLL ANIMATIONS === */
+        .split-word {
+            display: inline-block;
+            overflow: hidden;
+        }
+        .split-word-inner {
+            display: inline-block;
+            will-change: transform;
+        }
+
+        .section-reveal {
+            will-change: transform, opacity;
+        }
+
+        .clip-reveal {
+            clip-path: inset(0 100% 0 0);
+            transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .clip-reveal.active {
+            clip-path: inset(0 0% 0 0);
+        }
+
+        .parallax-bg {
+            will-change: transform;
+        }
+
+        .magnetic-btn {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Horizontal line draw animation */
+        .line-draw {
+            transform-origin: left center;
+            transform: scaleX(0);
+        }
+
+        /* Speaker card 3D hover */
+        .speaker-card {
+            perspective: 1000px;
+        }
+        .speaker-img-wrap {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .speaker-card:hover .speaker-img-wrap {
+            transform: rotateY(-5deg) rotateX(3deg) scale(1.02);
+        }
+
+        /* Pricing card glow on scroll */
+        .pricing-glow {
+            transition: box-shadow 0.6s ease;
+        }
+        .pricing-glow.active {
+            box-shadow: 0 0 80px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Text mask reveal */
+        .text-mask {
+            overflow: hidden;
+        }
+        .text-mask-inner {
+            display: block;
+            will-change: transform;
+        }
+
+        /* Stagger children helper */
+        .stagger-child {
+            will-change: transform, opacity;
+        }
+
+        /* Custom cursor follower */
+        #cursor-follower {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            pointer-events: none;
+            z-index: 9998;
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+        #cursor-follower.hovering {
+            width: 60px;
+            height: 60px;
+            border-color: rgba(16, 185, 129, 0.8);
+        }
+
+        /* Section divider animation */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.3), transparent);
+            transform: scaleX(0);
+        }
+
+        /* Number ticker */
+        .number-ticker {
+            display: inline-block;
+            overflow: hidden;
+            height: 1em;
+            line-height: 1;
+        }
+
+        /* Pinned section styles */
+        .pin-spacer {
+            background: transparent !important;
+        }
+    </style>
+</head>
+<body class="bg-[#050505]">
+    <div id="scroll-progress" style="width: 0%"></div>
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div class="absolute top-[10%] -left-[10%] w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] morph-blob"></div>
+        <div class="absolute bottom-[10%] -right-[10%] w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] morph-blob" style="animation-delay: -7s;"></div>
+    </div>
+
+    <!-- SUBTLE BACKGROUND GRID (global) -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute inset-0 energy-grid opacity-20"></div>
+    </div>
+
+    <!-- 1. STICKY HEADER -->
+    <header id="main-header" class="fixed top-0 w-full z-50 transition-all duration-500 h-20">
+        <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="logo-box w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                    <iconify-icon icon="lucide:ship" class="text-black text-xl"></iconify-icon>
+                </div>
+                <span class="font-display font-semibold text-2xl tracking-tighter">AI-КОВЧЕГ</span>
+            </div>
+            <nav class="hidden md:flex gap-12">
+                <a href="#program" id="nav-program-link" class="nav-link-hover relative font-label text-white/50 hover:text-white transition-colors">Программа</a>
+                <a href="#speakers" id="nav-speakers-link" class="nav-link-hover relative font-label text-white/50 hover:text-white transition-colors">Спикеры</a>
+                <a href="#pricing" id="nav-pricing-link" class="nav-link-hover relative font-label text-white/50 hover:text-white transition-colors">Пакеты</a>
+                <a href="#faq" id="nav-faq-link" class="nav-link-hover relative font-label text-white/50 hover:text-white transition-colors">FAQ</a>
+            </nav>
+            <a href="#pricing" id="nav-cta-btn" class="bg-white text-black font-semibold py-2.5 px-6 rounded-full text-[10px] uppercase tracking-widest hover:scale-105 transition-all">
+                Предзапись — $50
+            </a>
+        </div>
+    </header>
+
+    <!-- 2. HERO -->
+    <section id="hero-section" class="hero-section h-screen min-h-[700px] flex items-center pt-20 pb-10 px-6 relative overflow-hidden">
+        <!-- Video Background — FULL SCREEN -->
+        <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0;">
+            <video id="hero-video-bg" muted playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
+                <source src="hero_bg.mp4" type="video/mp4">
+            </video>
+            <!-- Dark overlay so text is readable -->
+            <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/50 via-[#050505]/30 to-[#050505]/90"></div>
+        </div>
+        <!-- Lightning WebGL on top of video -->
+        <canvas id="lightning-canvas" class="absolute inset-0 w-full h-full pointer-events-none" style="opacity: 0.25; mix-blend-mode: screen; z-index: 1;"></canvas>
+        <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-20 items-center relative z-10">
+            <div class="space-y-10">
+                <div class="hero-fade-up flex items-center gap-3" data-hero-delay="0">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_12px_#10B981]"></div>
+                    <span class="font-label text-emerald-500">8-недельная программа трансформации</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-display text-white leading-[0.9]">
+                    <span class="hero-title-line"><span class="hero-title-line-inner">Передай операционку</span></span>
+                    <span class="hero-title-line"><span class="hero-title-line-inner">нейросетям. Займись</span></span>
+                    <span class="hero-title-line"><span class="hero-title-line-inner"><span class="italic text-emerald-500">стратегией</span>.</span></span>
+                </h1>
+                <p class="hero-fade-up text-lg md:text-xl text-white/50 font-light leading-relaxed max-w-xl" data-hero-delay="0.4">
+                    Онлайн-программа по освоению AI-навыков и кратному увеличению эффективности бизнеса. Workshop + Workflow формат — не курс, не лекции. Нейросети станут вашими бесплатными сотрудниками.
+                </p>
+                <div class="hero-fade-up flex flex-col sm:flex-row gap-6 pt-4" data-hero-delay="0.6">
+                    <a href="#pricing" id="hero-cta-primary" class="bg-white text-black font-semibold py-3.5 px-10 rounded-full text-sm shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:scale-105 transition-all text-center">
+                        Забронировать за $50 →
+                    </a>
+                    <a href="#program" id="hero-cta-ghost" class="border border-white/10 bg-white/5 backdrop-blur-md text-white/80 py-3.5 px-10 rounded-full text-sm hover:bg-white/10 transition-all text-center">
+                        Узнать подробности
+                    </a>
+                </div>
+                <div class="hero-fade-up pt-12 flex flex-wrap gap-x-10 gap-y-4 font-label text-white/30" data-hero-delay="0.8">
+                    <span class="hero-stagger-item flex items-center gap-2"><iconify-icon icon="lucide:calendar" class="text-emerald-500"></iconify-icon> СТАРТ: 17 МАРТА</span>
+                    <span class="hero-stagger-item flex items-center gap-2"><iconify-icon icon="lucide:monitor" class="text-emerald-500"></iconify-icon> ОНЛАЙН</span>
+                    <span class="hero-stagger-item flex items-center gap-2"><iconify-icon icon="lucide:clock" class="text-emerald-500"></iconify-icon> 8 НЕДЕЛЬ</span>
+                    <span class="hero-stagger-item flex items-center gap-2"><iconify-icon icon="lucide:gift" class="text-emerald-500"></iconify-icon> СКИДКА ЗА ПРЕДЗАПИСЬ</span>
+                </div>
+            </div>
+            
+            <!-- Futuristic UI Mockup -->
+            <div class="hero-scale-in hidden lg:block relative h-full max-h-[600px]">
+                <div class="hero-parallax-card absolute top-10 right-0 w-[420px] glass-card rounded-3xl p-8 shadow-2xl z-20 border-white/20" data-speed="0.3">
+                    <div class="flex justify-between items-center mb-8">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                            <div class="w-3 h-3 rounded-full bg-emerald-500/50"></div>
+                        </div>
+                        <div class="font-label text-emerald-500/50">ANALYSIS_V2</div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="h-4 w-full bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 w-[65%] shadow-[0_0_10px_#10B981]"></div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-1 h-32 bg-white/5 rounded-2xl p-4 flex flex-col justify-end">
+                                <div class="font-label text-white/20 mb-2">REVENUE</div>
+                                <div class="font-display text-2xl text-emerald-500">+142%</div>
+                            </div>
+                            <div class="flex-1 h-32 bg-white/5 rounded-2xl p-4 flex flex-col justify-end">
+                                <div class="font-label text-white/20 mb-2">EFFICIENCY</div>
+                                <div class="font-display text-2xl text-emerald-500">x10.4</div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="h-2 w-full bg-white/5 rounded-full"></div>
+                            <div class="h-2 w-4/5 bg-white/5 rounded-full"></div>
+                            <div class="h-2 w-3/5 bg-white/5 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-parallax-card absolute bottom-20 -left-10 w-[380px] glass-card rounded-3xl p-8 z-30 shadow-2xl shimmer-border" data-speed="-0.2">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+                            <iconify-icon icon="lucide:terminal" class="text-emerald-500 text-2xl"></iconify-icon>
+                        </div>
+                        <div>
+                            <div class="font-display text-xl">AI Ассистент</div>
+                            <div class="font-label text-emerald-500">АКТИВЕН</div>
+                        </div>
+                    </div>
+                    <div class="font-mono text-[10px] text-white/30 space-y-1">
+                        <div>> initializing system... [OK]</div>
+                        <div>> connection established... [OK]</div>
+                        <div>> processing data streams... [OK]</div>
+                        <div class="text-emerald-500">> ready for deployment.</div>
+                    </div>
+                </div>
+                <!-- Floating Blobs inside Mockup -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-emerald-500/10 blur-[80px] rounded-full"></div>
+            </div>
+        </div>
+        <!-- Scroll indicator -->
+        <div class="scroll-indicator" id="scroll-down-indicator">
+            <div class="flex flex-col items-center gap-2">
+                <span class="font-label text-white/20 text-[9px] tracking-[0.3em]">SCROLL</span>
+                <div class="w-5 h-8 rounded-full border border-white/20 flex justify-center pt-1.5">
+                    <div class="w-1 h-2 bg-emerald-500 rounded-full" id="scroll-dot"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="w-full border-t border-white/5"></div>
+
+    <!-- 3. CREDIBILITY BAR -->
+    <section class="w-full border-y border-white/5 py-12">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12">
+            <div class="reveal-on-scroll space-y-3">
+                <div class="font-display text-6xl font-bold text-emerald-500 tracking-tighter" data-count="60" data-suffix="+">0</div>
+                <div class="font-label text-white/40">Проверенных AI-инструментов</div>
+            </div>
+            <div class="reveal-on-scroll space-y-3" style="transition-delay: 100ms;">
+                <div class="font-display text-6xl font-bold text-emerald-500 tracking-tighter" data-count="8" data-prefix="0">0</div>
+                <div class="font-label text-white/40">Модулей Workshop + Workflow</div>
+            </div>
+            <div class="reveal-on-scroll space-y-3" style="transition-delay: 200ms;">
+                <div class="font-display text-6xl font-bold text-emerald-500 tracking-tighter" data-count="10">0</div>
+                <div class="font-label text-white/40">Ключевых навыков мышления</div>
+            </div>
+            <div class="reveal-on-scroll space-y-3" style="transition-delay: 300ms;">
+                <div class="font-display text-6xl font-bold text-emerald-500 tracking-tighter" data-count="5" data-prefix="0" data-suffix="+">0</div>
+                <div class="font-label text-white/40">Экспертов-практиков</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. PROBLEM (Spotlight Cards) -->
+    <section id="problem-section" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="max-w-4xl mb-24 reveal-on-scroll">
+                <span class="font-label text-emerald-500 block mb-6 uppercase tracking-[0.3em]">КОНТЕКСТ РЫНКА</span>
+                <h2 class="text-5xl md:text-8xl font-display mb-12">
+                    Эпоха тотальной <span class="italic text-emerald-500">автоматизации</span>
+                </h2>
+                <p class="text-2xl md:text-3xl text-white/80 font-light leading-tight">
+                    <span class="text-emerald-500 font-semibold">3 из 4</span> руководителей признают: их бизнес умрёт без внедрения AI в ближайшие 2 года.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="reveal-on-scroll spotlight-card shimmer-border glass-card p-12 rounded-3xl group transition-all duration-500">
+                    <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-8">
+                        <iconify-icon icon="lucide:trending-up" class="text-emerald-500 text-3xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-3xl font-display mb-6 group-hover:text-emerald-500 transition-colors">AI — не тренд. Это эволюция.</h3>
+                    <p class="text-white/40 text-lg leading-relaxed">Игнорировать нейросети сегодня — это как отказываться от интернета в 2000-х. Это не инструмент выбора, а способ выживания системы.</p>
+                </div>
+                <div class="reveal-on-scroll spotlight-card shimmer-border glass-card p-12 rounded-3xl group transition-all duration-500" style="transition-delay: 150ms;">
+                    <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-8">
+                        <iconify-icon icon="lucide:shield-alert" class="text-emerald-500 text-3xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-3xl font-display mb-6 group-hover:text-emerald-500 transition-colors">Вас заменит не AI, а человек.</h3>
+                    <p class="text-white/40 text-lg leading-relaxed">Вас заменят конкуренты, которые освоили промпт-инжиниринг и автоматизировали свои отделы продаж, маркетинга и аналитики.</p>
+                </div>
+                <div class="reveal-on-scroll spotlight-card shimmer-border glass-card p-12 rounded-3xl group transition-all duration-500" style="transition-delay: 300ms;">
+                    <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-8">
+                        <iconify-icon icon="lucide:hourglass" class="text-emerald-500 text-3xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-3xl font-display mb-6 group-hover:text-emerald-500 transition-colors">Рутина сжигает время.</h3>
+                    <p class="text-white/40 text-lg leading-relaxed">Предприниматели тратят 70% времени на операционку. AI-ассистенты забирают эту нагрузку на себя, освобождая вас для стратегии.</p>
+                </div>
+                <div class="reveal-on-scroll spotlight-card shimmer-border glass-card p-12 rounded-3xl group transition-all duration-500" style="transition-delay: 450ms;">
+                    <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-8">
+<iconify-icon icon="lucide:users-round" class="text-emerald-500 text-3xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-3xl font-display mb-6 group-hover:text-emerald-500 transition-colors">Крах старых моделей найма.</h3>
+                    <p class="text-white/40 text-lg leading-relaxed">Зачем платить $1,500 ассистенту за сбор данных, если AI делает это за $20 в месяц быстрее и точнее в сотни раз?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. FOR WHOM -->
+    <section class="py-32 bg-white/[0.01]">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-24 reveal-on-scroll">
+                <h2 class="text-5xl md:text-7xl font-display mb-6">Для кого <span class="italic text-emerald-500">AI-Ковчег</span></h2>
+                <div class="w-24 h-px bg-emerald-500/50 mx-auto mb-6"></div>
+                <p class="font-label text-white/40">Технические знания не требуются. Мы учим мышлению.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-card p-12 rounded-[2.5rem] text-center reveal-on-scroll group">
+                    <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5 group-hover:border-emerald-500/30 transition-all">
+                        <iconify-icon icon="lucide:anchor" class="text-emerald-500 text-4xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-3xl font-display mb-6">Собственник бизнеса</h3>
+                    <p class="text-white/40 text-lg leading-relaxed">Желает кратно снизить расходы на ФОТ и автоматизировать 80% рутинных бизнес-процессов.</p>
+                </div>
+                <div class="glass-card p-12 rounded-[2.5rem] text-center reveal-on-scroll group" style="transition-delay: 100ms;">
+                    <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5 group-hover:border-emerald-500/30 transition-all">
+                        <iconify-icon icon="lucide:telescope" class="text-emerald-500 text-4xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-3xl font-display mb-6">Эксперт / Фрилансер</h3>
+                    <p class="text-white/40 text-lg leading-relaxed">Хочет ускорить свою работу в 5-10 раз, повысить чек и масштабировать личный бренд через контент.</p>
+                </div>
+                <div class="glass-card p-12 rounded-[2.5rem] text-center reveal-on-scroll group" style="transition-delay: 200ms;">
+                    <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5 group-hover:border-emerald-500/30 transition-all">
+                        <iconify-icon icon="lucide:compass" class="text-emerald-500 text-4xl"></iconify-icon>
+                    </div>
+                    <h3 class="text-3xl font-display mb-6">Руководитель</h3>
+                    <p class="text-white/40 text-lg leading-relaxed">Стремится управлять командой на основе AI-аналитики и внедрять инструменты предиктивного роста.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. MECHANISM / COMPARISON -->
+    <section id="comparison-section" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row gap-20 items-end mb-24 reveal-on-scroll">
+                <h2 class="text-5xl md:text-8xl font-display flex-grow">
+                    Это не обучение. Это <span class="italic text-emerald-500">трансформация</span>.
+                </h2>
+                <p class="text-white/40 text-xl font-light italic lg:max-w-sm border-l border-emerald-500/30 pl-8">
+                    «Как с вождением: разобрался один раз — ездишь всю жизнь.»
+                </p>
+            </div>
+            
+            <div class="overflow-x-auto reveal-on-scroll">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="py-8 font-label text-white/30 w-1/3">ПАРАМЕТР СРАВНЕНИЯ</th>
+                            <th class="py-8 font-label text-white/30">ОБЫЧНЫЙ КУРС</th>
+                            <th class="py-8 font-label text-emerald-500">AI-КОВЧЕГ</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-lg">
+                        <tr class="border-b border-white/5">
+                            <td class="py-8 font-display text-xl">Формат работы</td>
+                            <td class="py-8 text-white/30">Лекции → сам внедряй</td>
+                            <td class="py-8 text-emerald-500 border-l border-emerald-500/20 pl-6">Живой Workshop: эксперт внедряет при вас</td>
+                        </tr>
+                        <tr class="border-b border-white/5">
+                            <td class="py-8 font-display text-xl">Применимость</td>
+                            <td class="py-8 text-white/30">Абстрактные примеры</td>
+                            <td class="py-8 text-emerald-500 border-l border-emerald-500/20 pl-6">Решение задач конкретно вашего бизнеса</td>
+                        </tr>
+                        <tr class="border-b border-white/5">
+                            <td class="py-8 font-display text-xl">Методология</td>
+                            <td class="py-8 text-white/30">Записи без обратной связи</td>
+                            <td class="py-8 text-emerald-500 border-l border-emerald-500/20 pl-6">Workflow: готовые связки для копирования</td>
+                        </tr>
+                        <tr class="border-b border-white/5">
+                            <td class="py-8 font-display text-xl">Результат</td>
+                            <td class="py-8 text-white/30">Сертификат</td>
+                            <td class="py-8 text-emerald-500 border-l border-emerald-500/20 pl-6">Работающая AI-система в вашем проекте</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. PROGRAM (8 Modules Detailed) -->
+    <section id="program" class="py-32 px-6 bg-white/[0.01]">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-24 reveal-on-scroll">
+                <span class="font-label text-emerald-500 block mb-6">МАРШРУТ ЭКСПЕДИЦИИ</span>
+                <h2 class="text-5xl md:text-8xl font-display mb-6">
+                    8 модулей — 8 <span class="italic text-emerald-500">недель</span>
+                </h2>
+                <p class="text-xl text-white/40 font-light max-w-2xl mx-auto">Каждый модуль — это live-воркшоп с экспертом + готовые workflow для немедленного внедрения в ваш бизнес.</p>
+            </div>
+
+            <!-- Module Timeline -->
+            <div class="space-y-0 reveal-on-scroll">
+
+                <!-- Module 1 -->
+                <details class="accordion-item group overflow-hidden border-l-2 border-emerald-500/20 ml-6 pl-10 relative" open>
+                    <div class="absolute -left-[11px] top-10 w-5 h-5 rounded-full bg-emerald-500 border-4 border-[#050505] z-10 shadow-[0_0_12px_rgba(16,185,129,0.5)]"></div>
+                    <summary class="py-8 flex justify-between items-start cursor-pointer list-none">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="font-label text-emerald-500 text-xs">НЕДЕЛЯ 1</span>
+                                <span class="w-8 h-px bg-white/10"></span>
+                                <span class="font-label text-white/20 text-xs">WELCOME</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Фундамент AI</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform duration-500 mt-6 flex-shrink-0">
+                            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+                        </div>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="pb-10 space-y-6">
+                            <p class="text-white/50 text-lg leading-relaxed font-light">
+                                Почему AI — это не инструмент, а смена парадигмы. Погружаемся в логику работы LLM. Разбираем не кнопки, а архитектуру мышления. Колесо баланса ИИ-навыков: где вы сейчас и где будете через 8 недель.
+                            </p>
+                            <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <iconify-icon icon="lucide:target" class="text-emerald-500"></iconify-icon>
+                                    <span class="font-label text-emerald-500 text-[10px]">РЕЗУЛЬТАТ МОДУЛЯ</span>
+                                </div>
+                                <p class="text-white/70 font-light">Понимаете, где отстаёте и где AI даёт конкретные возможности роста для вашего бизнеса.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">СМЕНА ПАРАДИГМЫ</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">ЛОГИКА LLM</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">AI MINDSET</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Module 2 -->
+                <details class="accordion-item group overflow-hidden border-l-2 border-emerald-500/20 ml-6 pl-10 relative">
+                    <div class="absolute -left-[11px] top-10 w-5 h-5 rounded-full bg-[#050505] border-2 border-emerald-500/40 z-10"></div>
+                    <summary class="py-8 flex justify-between items-start cursor-pointer list-none">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="font-label text-emerald-500 text-xs">НЕДЕЛЯ 2</span>
+                                <span class="w-8 h-px bg-white/10"></span>
+                                <span class="font-label text-white/20 text-xs">ПРОМПТИНГ</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">AI-мышление и промтинг</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform duration-500 mt-6 flex-shrink-0">
+                            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+                        </div>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="pb-10 space-y-6">
+                            <p class="text-white/50 text-lg leading-relaxed font-light">
+                                Как работают языковые модели на уровне, нужном предпринимателю. Chain-of-Thought, Few-Shot, техники итеративного уточнения. Создание персональных GPT-ассистентов для ваших задач.
+                            </p>
+                            <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <iconify-icon icon="lucide:target" class="text-emerald-500"></iconify-icon>
+                                    <span class="font-label text-emerald-500 text-[10px]">РЕЗУЛЬТАТ МОДУЛЯ</span>
+                                </div>
+                                <p class="text-white/70 font-light">Первый рабочий AI-ассистент готов и решает задачи вашего бизнеса.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">CHAIN-OF-THOUGHT</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">FEW-SHOT</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">CUSTOM GPT</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Module 3 -->
+                <details class="accordion-item group overflow-hidden border-l-2 border-emerald-500/20 ml-6 pl-10 relative">
+                    <div class="absolute -left-[11px] top-10 w-5 h-5 rounded-full bg-[#050505] border-2 border-emerald-500/40 z-10"></div>
+                    <summary class="py-8 flex justify-between items-start cursor-pointer list-none">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="font-label text-emerald-500 text-xs">НЕДЕЛЯ 3</span>
+                                <span class="w-8 h-px bg-white/10"></span>
+                                <span class="font-label text-white/20 text-xs">АССИСТЕНТЫ</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Создание AI-ассистентов</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform duration-500 mt-6 flex-shrink-0">
+                            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+                        </div>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="pb-10 space-y-6">
+                            <p class="text-white/50 text-lg leading-relaxed font-light">
+                                Проектирование цифровых сотрудников по методологии JTBD. Разница между ассистентами и агентами. Реальные кейсы: салон красоты, e-commerce, рекрутинг, аналитика.
+                            </p>
+                            <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <iconify-icon icon="lucide:target" class="text-emerald-500"></iconify-icon>
+                                    <span class="font-label text-emerald-500 text-[10px]">РЕЗУЛЬТАТ МОДУЛЯ</span>
+                                </div>
+                                <p class="text-white/70 font-light">Спроектированные AI-ассистенты под конкретные процессы вашего бизнеса.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">JTBD</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">АГЕНТЫ VS АССИСТЕНТЫ</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">КЕЙСЫ</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Module 4 -->
+                <details class="accordion-item group overflow-hidden border-l-2 border-emerald-500/20 ml-6 pl-10 relative">
+                    <div class="absolute -left-[11px] top-10 w-5 h-5 rounded-full bg-[#050505] border-2 border-emerald-500/40 z-10"></div>
+                    <summary class="py-8 flex justify-between items-start cursor-pointer list-none">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="font-label text-emerald-500 text-xs">НЕДЕЛЯ 4</span>
+                                <span class="w-8 h-px bg-white/10"></span>
+                                <span class="font-label text-white/20 text-xs">ИССЛЕДОВАНИЯ</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Deep Research и стратегический анализ</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform duration-500 mt-6 flex-shrink-0">
+                            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+                        </div>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="pb-10 space-y-6">
+                            <p class="text-white/50 text-lg leading-relaxed font-light">
+                                Глубинные исследования рынка, анализ аудитории, генерация гипотез. Multi-AI подход: Perplexity, ChatGPT, Claude, Gemini — каждый для своей задачи. 6-шаговый алгоритм стратегического анализа.
+                            </p>
+                            <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <iconify-icon icon="lucide:target" class="text-emerald-500"></iconify-icon>
+                                    <span class="font-label text-emerald-500 text-[10px]">РЕЗУЛЬТАТ МОДУЛЯ</span>
+                                </div>
+                                <p class="text-white/70 font-light">Полный анализ вашей ниши, готовый для создания продуктов и маркетинга.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">PERPLEXITY</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">CHATGPT</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">CLAUDE</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">GEMINI</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Module 5 -->
+                <details class="accordion-item group overflow-hidden border-l-2 border-emerald-500/20 ml-6 pl-10 relative">
+                    <div class="absolute -left-[11px] top-10 w-5 h-5 rounded-full bg-emerald-500 border-4 border-[#050505] z-10 shadow-[0_0_12px_rgba(16,185,129,0.3)]"></div>
+                    <summary class="py-8 flex justify-between items-start cursor-pointer list-none">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="font-label text-emerald-500 text-xs">НЕДЕЛЯ 5</span>
+                                <span class="w-8 h-px bg-white/10"></span>
+                                <span class="font-label text-white/20 text-xs">МАРКЕТИНГ</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Маркетинг, упаковка и анализ ЦА</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform duration-500 mt-6 flex-shrink-0">
+                            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+                        </div>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="pb-10 space-y-6">
+                            <p class="text-white/50 text-lg leading-relaxed font-light">
+                                CustDev или Deep Research путь — оба через AI. Создание оффера по формуле Hormozi. Автоматическое ТЗ на лендинг, прототипирование за часы вместо недель. Анализ целевой аудитории без агентства.
+                            </p>
+                            <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <iconify-icon icon="lucide:target" class="text-emerald-500"></iconify-icon>
+                                    <span class="font-label text-emerald-500 text-[10px]">РЕЗУЛЬТАТ МОДУЛЯ</span>
+                                </div>
+                                <p class="text-white/70 font-light">Оффер + ТЗ для сайта за 4-5 часов вместо 2-3 недель работы агентства.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">GRAND SLAM OFFER</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">CUSTDEV</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">ПРОТОТИПИРОВАНИЕ</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Module 6 -->
+                <details class="accordion-item group overflow-hidden border-l-2 border-emerald-500/20 ml-6 pl-10 relative">
+                    <div class="absolute -left-[11px] top-10 w-5 h-5 rounded-full bg-[#050505] border-2 border-emerald-500/40 z-10"></div>
+                    <summary class="py-8 flex justify-between items-start cursor-pointer list-none">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="font-label text-emerald-500 text-xs">НЕДЕЛЯ 6</span>
+                                <span class="w-8 h-px bg-white/10"></span>
+                                <span class="font-label text-white/20 text-xs">ВИЗУАЛ</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Визуальный контент</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform duration-500 mt-6 flex-shrink-0">
+                            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+                        </div>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="pb-10 space-y-6">
+                            <p class="text-white/50 text-lg leading-relaxed font-light">
+                                Генерация идей, контент-стратегии, видео, фото, анимация, монтаж — без съёмок и актёров. Создание визуального контента для соцсетей, рекламы и продуктов целиком через AI.
+                            </p>
+                            <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <iconify-icon icon="lucide:target" class="text-emerald-500"></iconify-icon>
+                                    <span class="font-label text-emerald-500 text-[10px]">РЕЗУЛЬТАТ МОДУЛЯ</span>
+                                </div>
+                                <p class="text-white/70 font-light">Готовая система производства визуального контента без дизайнера.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">MIDJOURNEY</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">RUNWAY</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">SORA</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">КОНТЕНТ-СИСТЕМА</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Module 7 -->
+                <details class="accordion-item group overflow-hidden border-l-2 border-emerald-500/20 ml-6 pl-10 relative">
+                    <div class="absolute -left-[11px] top-10 w-5 h-5 rounded-full bg-[#050505] border-2 border-emerald-500/40 z-10"></div>
+                    <summary class="py-8 flex justify-between items-start cursor-pointer list-none">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="font-label text-emerald-500 text-xs">НЕДЕЛЯ 7</span>
+                                <span class="w-8 h-px bg-white/10"></span>
+                                <span class="font-label text-white/20 text-xs">АВТОМАТИЗАЦИЯ</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Автоматизация бизнес-процессов</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform duration-500 mt-6 flex-shrink-0">
+                            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+                        </div>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="pb-10 space-y-6">
+                            <p class="text-white/50 text-lg leading-relaxed font-light">
+                                Реальные кейсы: автоматизация отделов продаж, рекрутинг (обработка 30 000 кандидатов), HR, финансы. Связки через API без программирования. No-code интеграции и автоматические пайплайны.
+                            </p>
+                            <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <iconify-icon icon="lucide:target" class="text-emerald-500"></iconify-icon>
+                                    <span class="font-label text-emerald-500 text-[10px]">РЕЗУЛЬТАТ МОДУЛЯ</span>
+                                </div>
+                                <p class="text-white/70 font-light">Автоматизированные процессы + дорожная карта внедрений на год.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">MAKE / ZAPIER</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">API-СВЯЗКИ</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">NO-CODE</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">30K КАНДИДАТОВ</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Module 8 -->
+                <details class="accordion-item group overflow-hidden border-l-2 border-emerald-500/30 ml-6 pl-10 relative">
+                    <div class="absolute -left-[11px] top-10 w-5 h-5 rounded-full bg-emerald-500 border-4 border-[#050505] z-10 shadow-[0_0_16px_rgba(16,185,129,0.6)]"></div>
+                    <div class="absolute -left-[1px] top-14 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500/30 to-transparent"></div>
+                    <summary class="py-8 flex justify-between items-start cursor-pointer list-none">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="font-label text-emerald-500 text-xs">НЕДЕЛЯ 8</span>
+                                <span class="w-8 h-px bg-white/10"></span>
+                                <span class="font-label text-white/20 text-xs">ФИНАЛ</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Vibe Coding</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform duration-500 mt-6 flex-shrink-0">
+                            <iconify-icon icon="lucide:chevron-down" class="text-xl"></iconify-icon>
+                        </div>
+                    </summary>
+                    <div class="accordion-content">
+                        <div class="pb-10 space-y-6">
+                            <p class="text-white/50 text-lg leading-relaxed font-light">
+                                Создание приложений и инструментов без навыков программирования. Прототипирование MVP за часы. Вы учитесь создавать цифровые продукты самостоятельно — от идеи до рабочего решения.
+                            </p>
+                            <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <iconify-icon icon="lucide:target" class="text-emerald-500"></iconify-icon>
+                                    <span class="font-label text-emerald-500 text-[10px]">РЕЗУЛЬТАТ МОДУЛЯ</span>
+                                </div>
+                                <p class="text-white/70 font-light">Способность создавать цифровые продукты и MVP самостоятельно, без разработчиков.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">CURSOR</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">BOLT / LOVABLE</span>
+                                <span class="px-3 py-1.5 bg-white/5 rounded-full font-label text-[9px] text-white/30">MVP ЗА ЧАСЫ</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+
+            <!-- Summary stats bar -->
+            <div class="mt-20 glass-card p-10 rounded-3xl reveal-on-scroll">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <div class="font-display text-4xl text-emerald-500 mb-2">8</div>
+                        <div class="font-label text-white/30 text-[10px]">LIVE-ВОРКШОПОВ</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-4xl text-emerald-500 mb-2">60+</div>
+                        <div class="font-label text-white/30 text-[10px]">AI-ИНСТРУМЕНТОВ</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-4xl text-emerald-500 mb-2">8</div>
+                        <div class="font-label text-white/30 text-[10px]">ГОТОВЫХ WORKFLOW</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-4xl text-emerald-500 mb-2">∞</div>
+                        <div class="font-label text-white/30 text-[10px]">ДОСТУП К ЗАПИСЯМ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. WEEKLY CYCLE -->
+    <section id="weekly-section" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-32 reveal-on-scroll">
+                <h2 class="text-5xl md:text-8xl font-display mb-12">Ритм <span class="italic text-emerald-500">экспедиции</span></h2>
+            </div>
+            
+            <div class="relative reveal-on-scroll">
+                <div class="hidden md:block absolute top-6 left-0 w-full h-px bg-white/10"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-12">
+                    <div class="space-y-8 text-center">
+                        <div class="w-12 h-12 rounded-full bg-emerald-500 text-black flex items-center justify-center font-bold mx-auto z-10 relative">1</div>
+                        <div class="space-y-4">
+                            <h4 class="font-display text-2xl">Воркшоп</h4>
+                            <p class="text-white/40 text-sm leading-relaxed">2-3 часа живого эфира с экспертом-практиком</p>
+                        </div>
+                    </div>
+                    <div class="space-y-8 text-center">
+                        <div class="w-12 h-12 rounded-full bg-black border border-emerald-500/50 text-emerald-500 flex items-center justify-center font-bold mx-auto z-10 relative">2</div>
+                        <div class="space-y-4">
+                            <h4 class="font-display text-2xl">Материалы</h4>
+                            <p class="text-white/40 text-sm leading-relaxed">Получаете готовые промпты, алгоритмы и Workflow</p>
+                        </div>
+                    </div>
+                    <div class="space-y-8 text-center">
+                        <div class="w-12 h-12 rounded-full bg-emerald-500 text-black flex items-center justify-center font-bold mx-auto z-10 relative shadow-[0_0_25px_rgba(16,185,129,0.5)]">3</div>
+                        <div class="space-y-4">
+                            <h4 class="font-display text-2xl">Внедрение</h4>
+                            <p class="text-white/40 text-sm leading-relaxed">Применяете связки в своем бизнесе прямо в процессе</p>
+                        </div>
+                    </div>
+                    <div class="space-y-8 text-center">
+                        <div class="w-12 h-12 rounded-full bg-black border border-emerald-500/50 text-emerald-500 flex items-center justify-center font-bold mx-auto z-10 relative">4</div>
+                        <div class="space-y-4">
+                            <h4 class="font-display text-2xl">Live-Разбор</h4>
+                            <p class="text-white/40 text-sm leading-relaxed">Получаете хирургический фидбек по вашим кейсам</p>
+                        </div>
+                    </div>
+                    <div class="space-y-8 text-center">
+                        <div class="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold mx-auto z-10 relative">5</div>
+                        <div class="space-y-4">
+                            <h4 class="font-display text-2xl">Результат</h4>
+                            <p class="text-white/40 text-sm leading-relaxed">Зафиксированная система, готовая к росту</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-24 text-center text-white/20 italic font-light reveal-on-scroll">
+                Нагрузка: 3-5 часов в неделю. Максимальная эффективность при минимальных затратах времени.
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. SPEAKERS -->
+    <section id="speakers" class="py-32 bg-white/[0.01]">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-24 reveal-on-scroll">
+                <h2 class="text-5xl md:text-8xl font-display mb-8">Ваши <span class="italic text-emerald-500">проводники</span></h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="speaker-card space-y-8 group">
+                    <div class="aspect-square rounded-[3rem] overflow-hidden shimmer-border border border-white/10 p-1 speaker-img-wrap">
+                        <div class="w-full h-full rounded-[2.8rem] bg-white/5 overflow-hidden">
+                            <img src="speaker_vlad.png" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Vlad">
+                        </div>
+                    </div>
+                    <div class="px-4">
+                        <div class="font-label text-emerald-500 mb-2">PRODUCER & METHODOLOGIST</div>
+                        <h4 class="text-4xl font-display">Влад Ясько</h4>
+                        <p class="text-white/40 mt-4 leading-relaxed">Архитектор образовательных систем, внедривший ИИ в 15+ крупных проектов.</p>
+                    </div>
+                </div>
+                <div class="speaker-card space-y-8 group">
+                    <div class="aspect-square rounded-[3rem] overflow-hidden border border-white/10 p-1 speaker-img-wrap">
+                        <div class="w-full h-full rounded-[2.8rem] bg-white/5 overflow-hidden">
+                            <img src="speaker_anton.png" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Anton">
+                        </div>
+                    </div>
+                    <div class="px-4">
+                        <div class="font-label text-emerald-500 mb-2">AI ENTHUSIAST & EXPERT</div>
+                        <h4 class="text-4xl font-display">Антон</h4>
+                        <p class="text-white/40 mt-4 leading-relaxed">Специалист по генеративному контенту и нейросетям для маркетинга.</p>
+                    </div>
+                </div>
+                <div class="speaker-card space-y-8 group">
+                    <div class="aspect-square rounded-[3rem] overflow-hidden border border-white/10 p-1 speaker-img-wrap">
+                        <div class="w-full h-full rounded-[2.8rem] bg-white/5 overflow-hidden">
+                            <img src="speaker_konstantin.png" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Konstantin">
+                        </div>
+                    </div>
+                    <div class="px-4">
+                        <div class="font-label text-emerald-500 mb-2">AUTOMATION SPECIALIST</div>
+                        <h4 class="text-4xl font-display">Константин Карпушин</h4>
+                        <p class="text-white/40 mt-4 leading-relaxed">Мастер No-code решений и глубокой интеграции ИИ в бизнес-процессы.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-32 glass-card p-12 rounded-[3rem] text-center max-w-4xl mx-auto reveal-on-scroll">
+                <p class="text-2xl md:text-3xl text-white/70 font-display italic leading-relaxed">
+                    «Мы не инфобизнесмены. Мы делимся тем, как реально работают наши бизнесы, отделы продаж и производства сегодня.»
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. SOCIAL PROOF (Masonry Placeholder) -->
+    <section class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-24 reveal-on-scroll">
+                <div class="font-display text-[12rem] md:text-[16rem] text-white/5 font-bold leading-none select-none">150+</div>
+                <div class="font-label text-emerald-500 -mt-10 tracking-[0.5em]">УЧАСТНИКОВ НА БОРТУ</div>
+            </div>
+            
+            <div class="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6 reveal-on-scroll">
+                <!-- Masonry Items -->
+                <div class="glass-card p-8 rounded-3xl break-inside-avoid">
+                    <div class="flex gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-white/10"></div>
+                        <div>
+                            <div class="font-bold">Александр П.</div>
+                            <div class="text-emerald-500 text-xs">CEO Real Estate</div>
+                        </div>
+                    </div>
+                    <p class="text-white/40 leading-relaxed italic">«Внедрил ИИ-ассистента для обработки лидов. Конверсия выросла на 40%, ФОТ отдела продаж снизился на треть.»</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl break-inside-avoid">
+                    <p class="text-white/40 leading-relaxed italic">«Программа окупилась на 3-й неделе, когда я автоматизировал сбор и анализ конкурентов за 5 минут вместо 3 дней.»</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl break-inside-avoid bg-emerald-500/5">
+                    <iconify-icon icon="lucide:quote" class="text-emerald-500 text-3xl mb-4"></iconify-icon>
+                    <p class="text-white/80 leading-relaxed font-display text-xl">«Это лучшее вложение в моё мышление за последние 5 лет.»</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl break-inside-avoid">
+                    <div class="flex gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-white/10"></div>
+                        <div>
+                            <div class="font-bold">Марина Д.</div>
+                            <div class="text-emerald-500 text-xs">Expert Coach</div>
+                        </div>
+                    </div>
+                    <p class="text-white/40 leading-relaxed italic">«Теперь мой контент генерируется сам на основе моих мыслей. Высвободила 20 часов в неделю.»</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl break-inside-avoid">
+                    <p class="text-white/40 leading-relaxed italic">«Наконец-то я понял, как работает промптинг на самом деле. Это как выучить новый язык силы.»</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl break-inside-avoid">
+                    <div class="h-40 bg-white/5 rounded-2xl flex items-center justify-center">
+                        <iconify-icon icon="lucide:play-circle" class="text-6xl text-emerald-500 opacity-50"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. VALUE STACK -->
+    <section class="py-32 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-20 reveal-on-scroll">
+                <h2 class="text-5xl md:text-8xl font-display">Что на <span class="italic text-emerald-500">борту</span></h2>
+            </div>
+            <div class="space-y-4 mb-16 reveal-on-scroll">
+                <div class="flex justify-between items-center py-6 border-b border-white/5">
+                    <div class="flex items-center gap-6">
+                        <iconify-icon icon="lucide:check-circle" class="text-emerald-500 text-2xl"></iconify-icon>
+                        <span class="text-xl md:text-2xl font-light">8 модулей Workshop + Workflow</span>
+                    </div>
+                    <span class="font-display text-2xl text-white/20">$3,000</span>
+                </div>
+                <div class="flex justify-between items-center py-6 border-b border-white/5">
+                    <div class="flex items-center gap-6">
+                        <iconify-icon icon="lucide:check-circle" class="text-emerald-500 text-2xl"></iconify-icon>
+                        <span class="text-xl md:text-2xl font-light">Библиотека промптов и алгоритмов</span>
+                    </div>
+                    <span class="font-display text-2xl text-white/20">$1,000</span>
+                </div>
+                <div class="flex justify-between items-center py-6 border-b border-white/5">
+                    <div class="flex items-center gap-6">
+                        <iconify-icon icon="lucide:check-circle" class="text-emerald-500 text-2xl"></iconify-icon>
+                        <span class="text-xl md:text-2xl font-light">Сессии Live-разборов (8 недель)</span>
+                    </div>
+                    <span class="font-display text-2xl text-white/20">$2,000</span>
+                </div>
+                <div class="flex justify-between items-center py-8 pt-12">
+                    <span class="font-label text-emerald-500 tracking-[0.4em]">СУММАРНАЯ ЦЕННОСТЬ</span>
+                    <span class="font-display text-5xl md:text-7xl text-emerald-500">$8,500+</span>
+                </div>
+            </div>
+
+            <div class="shimmer-border rounded-[2.5rem] p-[1px] reveal-on-scroll">
+                <div class="bg-emerald-500/5 backdrop-blur-xl p-10 md:p-16 rounded-[2.45rem] flex flex-col md:flex-row justify-between items-center gap-12 border border-emerald-500/20">
+                    <div class="space-y-6">
+                        <div class="inline-block px-4 py-1 bg-emerald-500 text-black rounded-full font-label text-[10px]">SPECIAL BONUS</div>
+                        <h3 class="text-4xl md:text-5xl font-display">AI Starter Kit</h3>
+                        <p class="text-white/40 text-lg leading-relaxed max-w-md">Годовая подписка на Perplexity Pro + пакет готовых ассистентов для быстрой настройки бизнеса.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-label text-white/30 line-through mb-2">VALUE $700</div>
+                        <div class="font-display text-6xl text-emerald-500">FREE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 12. PRICING -->
+    <section id="pricing" class="py-32 px-6 bg-white/[0.01]">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-24 reveal-on-scroll">
+                <h2 class="text-5xl md:text-8xl font-display mb-8">Билеты на <span class="italic text-emerald-500">Ковчег</span></h2>
+                <div class="inline-flex items-center gap-3 px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                    <iconify-icon icon="lucide:gift" class="text-emerald-500"></iconify-icon>
+                    <span class="font-label text-emerald-500 text-xs">ПРЕДЗАПИСЬ — СКИДКА ЗА РАННИЙ ДОСТУП</span>
+                </div>
+                <p class="text-white/30 font-label mt-6">ЗАБРОНИРУЙТЕ МЕСТО ЗА $50 · ОСТАТОК ДОПЛАТИТЕ ПОЗЖЕ СО СКИДКОЙ</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 items-stretch">
+                <!-- Tier 1 -->
+                <div class="glass-card pricing-lift p-12 rounded-[3rem] space-y-12 flex flex-col reveal-on-scroll">
+                    <div class="space-y-6">
+                        <h3 class="text-3xl font-display">Наблюдатель</h3>
+                        <p class="text-white/30 font-light leading-relaxed">Для тех, кто хочет получить контент и внедрить всё самостоятельно.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="text-white/20 line-through font-display text-2xl">$750</div>
+                        <div class="text-5xl font-display text-emerald-500">$450</div>
+                    </div>
+                    <ul class="space-y-4 flex-grow">
+                        <li class="flex gap-4 text-white/50"><iconify-icon icon="lucide:check" class="text-emerald-500 mt-1"></iconify-icon> Доступ ко всем записям</li>
+                        <li class="flex gap-4 text-white/50"><iconify-icon icon="lucide:check" class="text-emerald-500 mt-1"></iconify-icon> Материалы и промпты</li>
+                        <li class="flex gap-4 text-white/20"><iconify-icon icon="lucide:x" class="text-red-500/50 mt-1"></iconify-icon> Участие в Live-сессиях</li>
+                    </ul>
+                    <a href="#" id="pricing-tier-1-btn" class="block w-full text-center border border-white/10 py-3.5 rounded-full font-label text-xs hover:bg-white/5 transition-all">ЗАБРОНИРОВАТЬ ЗА $50</a>
+                </div>
+                
+                <!-- Tier 2 - Featured -->
+                <div class="shimmer-border rounded-[3.2rem] p-[1px] relative reveal-on-scroll" style="transition-delay: 100ms;">
+                    <div class="bg-[#0A0A0A] backdrop-blur-2xl p-12 md:p-14 rounded-[3.15rem] space-y-12 flex flex-col h-full border border-emerald-500/30">
+                        <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-emerald-500 text-black px-6 py-2 rounded-full font-label text-[10px] shadow-[0_0_20px_rgba(16,185,129,0.5)]">
+                            ПОПУЛЯРНЫЙ ВЫБОР
+                        </div>
+                        <div class="space-y-6">
+                            <h3 class="text-4xl font-display">Участник</h3>
+                            <p class="text-white/50 font-light leading-relaxed">Полная программа с личным сопровождением и внедрением.</p>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="text-white/20 line-through font-display text-2xl">$1,500</div>
+                            <div class="text-7xl font-display text-emerald-500 tracking-tighter">$950</div>
+                        </div>
+                        <ul class="space-y-5 flex-grow">
+                            <li class="flex gap-4"><iconify-icon icon="lucide:check" class="text-emerald-500 mt-1"></iconify-icon> Живое участие в Workshop</li>
+                            <li class="flex gap-4"><iconify-icon icon="lucide:check" class="text-emerald-500 mt-1"></iconify-icon> Личный разбор заданий</li>
+                            <li class="flex gap-4"><iconify-icon icon="lucide:check" class="text-emerald-500 mt-1"></iconify-icon> Доступ в закрытое комьюнити</li>
+                            <li class="flex gap-4 font-bold text-emerald-500"><iconify-icon icon="lucide:zap" class="mt-1"></iconify-icon> AI STARTER KIT БЕСПЛАТНО</li>
+                        </ul>
+                        <a href="#" id="pricing-tier-2-btn" class="block w-full text-center bg-white text-black py-4 rounded-full font-label text-xs emerald-pulse hover:scale-105 transition-all">ЗАБРОНИРОВАТЬ ЗА $50 →</a>
+                    </div>
+                </div>
+
+                <!-- Tier 3 -->
+                <div class="shimmer-border shimmer-border-gold glass-card pricing-lift p-12 rounded-[3rem] space-y-12 flex flex-col reveal-on-scroll" style="transition-delay: 200ms;">
+                    <div class="space-y-6">
+                        <h3 class="text-3xl font-display text-[#D4AF37]">Один-на-один</h3>
+                        <p class="text-white/30 font-light leading-relaxed">Ваш бизнес становится главным кейсом курса. Полная архитектура под ключ.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="text-6xl font-display text-[#D4AF37] tracking-tighter">$9,500</div>
+                    </div>
+                    <ul class="space-y-4 flex-grow">
+                        <li class="flex gap-4 text-white/50"><iconify-icon icon="lucide:check" class="text-[#D4AF37] mt-1"></iconify-icon> Личный чат со спикерами</li>
+                        <li class="flex gap-4 text-white/50"><iconify-icon icon="lucide:check" class="text-[#D4AF37] mt-1"></iconify-icon> Аудит бизнеса экспертом</li>
+                        <li class="flex gap-4 text-white/50"><iconify-icon icon="lucide:check" class="text-[#D4AF37] mt-1"></iconify-icon> Дорожная карта на год</li>
+                    </ul>
+                    <a href="#" id="pricing-tier-3-btn" class="block w-full text-center border border-[#D4AF37]/30 text-[#D4AF37] py-3.5 rounded-full font-label text-xs hover:bg-[#D4AF37]/10 transition-all uppercase">СВЯЗАТЬСЯ</a>
+                </div>
+            </div>
+            <div class="mt-16 text-center reveal-on-scroll">
+                <p class="text-white/30 font-label">ВОЗМОЖНА ОПЛАТА В РАССРОЧКУ И КОРПОРАТИВНОЕ ОБУЧЕНИЕ</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 13. GUARANTEE (Boarding Pass) -->
+    <section class="py-32 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-[#0A1628] rounded-[4rem] overflow-hidden border border-emerald-500/20 shadow-2xl relative boarding-pass-mask reveal-on-scroll">
+                <div class="flex flex-col md:flex-row">
+                    <div class="p-12 md:p-20 space-y-10 flex-grow relative">
+                        <div class="absolute top-10 right-10 opacity-5">
+                            <iconify-icon icon="lucide:ship" class="text-[200px]"></iconify-icon>
+                        </div>
+                        <span class="font-label text-emerald-500">RISK REVERSAL</span>
+                        <h2 class="text-5xl md:text-7xl font-display">Ваш билет <span class="italic text-emerald-500">застрахован</span></h2>
+                        <p class="text-2xl text-white/60 leading-relaxed font-light max-w-2xl">
+                            Мы гарантируем результат. Если после 2 недель обучения вы решите, что программа вам не подходит — вернём <span class="text-white">100% стоимости</span> без лишних вопросов. 
+                        </p>
+                        <div class="flex items-center gap-6">
+                            <div class="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                                <iconify-icon icon="lucide:shield-check" class="text-emerald-500 text-3xl"></iconify-icon>
+                            </div>
+                            <div class="font-label text-emerald-500">ГАРАНТИЯ ВОЗВРАТА 14 ДНЕЙ</div>
+                        </div>
+                    </div>
+                    <div class="bg-white/[0.03] p-12 md:p-20 flex flex-col items-center justify-center text-center space-y-6 border-l border-white/5 border-dashed">
+                        <div class="w-24 h-24 rounded-full border border-emerald-500/30 flex items-center justify-center">
+                            <iconify-icon icon="lucide:anchor" class="text-5xl text-emerald-500/50"></iconify-icon>
+                        </div>
+                        <div class="font-label text-white/20 tracking-[0.5em] vertical-text">SECURED EXPEDITION</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-20 text-center reveal-on-scroll">
+                <p class="text-4xl md:text-6xl font-display text-white leading-tight italic">
+                    «Риска нет. Есть только <span class="text-emerald-500">упущенная возможность</span>.»
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 14. FAQ -->
+    <section id="faq" class="py-32 px-6 max-w-4xl mx-auto">
+        <div class="text-center mb-24 reveal-on-scroll">
+            <h2 class="text-5xl md:text-8xl font-display">Частые <span class="italic text-emerald-500">вопросы</span></h2>
+        </div>
+        <div class="space-y-4 reveal-on-scroll">
+            <details class="accordion-item border-b border-white/5 group">
+                <summary class="py-10 flex justify-between items-center cursor-pointer list-none">
+                    <h4 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">А если я совсем не разбираюсь в технологиях?</h4>
+                    <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>
+                    </div>
+                </summary>
+                <div class="accordion-content">
+                    <div class="pb-10 space-y-4 pr-12">
+                        <p class="text-white/40 text-lg font-light leading-relaxed">
+                            Программа создана для собственников и управленцев, а не для программистов. Мы учим пользоваться инструментами на естественном человеческом языке. Если вы умеете писать сообщения в Telegram — вы справитесь.
+                        </p>
+                    </div>
+                </div>
+            </details>
+            <details class="accordion-item border-b border-white/5 group">
+                <summary class="py-10 flex justify-between items-center cursor-pointer list-none">
+                    <h4 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Сколько времени нужно выделять?</h4>
+                    <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>
+                    </div>
+                </summary>
+                <div class="accordion-content">
+                    <div class="pb-10 space-y-4 pr-12">
+                        <p class="text-white/40 text-lg font-light leading-relaxed">
+                            В среднем 3-5 часов в неделю. Вы можете смотреть воркшопы в записи и внедрять инструменты в своём темпе. Главное — результат в бизнесе.
+                        </p>
+                    </div>
+                </div>
+            </details>
+            <details class="accordion-item border-b border-white/5 group">
+                <summary class="py-10 flex justify-between items-center cursor-pointer list-none">
+                    <h4 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Чем это отличается от бесплатных YouTube-уроков?</h4>
+                    <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>
+                    </div>
+                </summary>
+                <div class="accordion-content">
+                    <div class="pb-10 space-y-4 pr-12">
+                        <p class="text-white/40 text-lg font-light leading-relaxed">
+                            Мы не учим промпты. Мы решаем реальные задачи реального бизнеса в live-формате. Вы получаете workflow, который сразу внедряете. Плюс обратная связь от экспертов — то, чего нет ни в одном YouTube-ролике.
+                        </p>
+                    </div>
+                </div>
+            </details>
+            <details class="accordion-item border-b border-white/5 group">
+                <summary class="py-10 flex justify-between items-center cursor-pointer list-none">
+                    <h4 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">$950 — это дорого?</h4>
+                    <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>
+                    </div>
+                </summary>
+                <div class="accordion-content">
+                    <div class="pb-10 space-y-4 pr-12">
+                        <p class="text-white/40 text-lg font-light leading-relaxed">
+                            Это зарплата одного ассистента за один месяц. Знания остаются навсегда и экономят десятки таких зарплат в будущем. Плюс гарантия полного возврата в течение 2 недель.
+                        </p>
+                    </div>
+                </div>
+            </details>
+            <details class="accordion-item border-b border-white/5 group">
+                <summary class="py-10 flex justify-between items-center cursor-pointer list-none">
+                    <h4 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">А если программа мне не подойдёт?</h4>
+                    <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>
+                    </div>
+                </summary>
+                <div class="accordion-content">
+                    <div class="pb-10 space-y-4 pr-12">
+                        <p class="text-white/40 text-lg font-light leading-relaxed">
+                            100% возврат денег в течение 2 недель при посещении минимум 3 занятий. Вы ничем не рискуете — вся ответственность на нас.
+                        </p>
+                    </div>
+                </div>
+            </details>
+            <details class="accordion-item border-b border-white/5 group">
+                <summary class="py-10 flex justify-between items-center cursor-pointer list-none">
+                    <h4 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Подойдёт ли для моей ниши?</h4>
+                    <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>
+                    </div>
+                </summary>
+                <div class="accordion-content">
+                    <div class="pb-10 space-y-4 pr-12">
+                        <p class="text-white/40 text-lg font-light leading-relaxed">
+                            На программе будут бизнесы из разных ниш: недвижимость, салоны красоты, e-commerce, образование, сервисы. AI-навыки универсальны и применимы к любому бизнесу.
+                        </p>
+                    </div>
+                </div>
+            </details>
+            <details class="accordion-item border-b border-white/5 group">
+                <summary class="py-10 flex justify-between items-center cursor-pointer list-none">
+                    <h4 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Когда старт? Какой формат?</h4>
+                    <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>
+                    </div>
+                </summary>
+                <div class="accordion-content">
+                    <div class="pb-10 space-y-4 pr-12">
+                        <p class="text-white/40 text-lg font-light leading-relaxed">
+                            Онлайн. Старт — 17 марта. Записи доступны, но максимальная ценность — в live-участии. Длительность — 8 недель, по 1 воркшопу в неделю.
+                        </p>
+                    </div>
+                </div>
+            </details>
+            <details class="accordion-item border-b border-white/5 group">
+                <summary class="py-10 flex justify-between items-center cursor-pointer list-none">
+                    <h4 class="text-2xl md:text-3xl font-display group-hover:text-emerald-500 transition-colors">Можно ли оплатить частями?</h4>
+                    <div class="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-open:rotate-180 transition-transform">
+                        <iconify-icon icon="lucide:plus"></iconify-icon>
+                    </div>
+                </summary>
+                <div class="accordion-content">
+                    <div class="pb-10 space-y-4 pr-12">
+                        <p class="text-white/40 text-lg font-light leading-relaxed">
+                            Да. Напишите менеджеру для обсуждения удобного варианта оплаты. Также доступна предзапись за $50 — остаток доплатите позже со скидкой за ранний доступ.
+                        </p>
+                    </div>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- 15. FINAL CTA -->
+    <section class="py-32 px-6 overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="glass-card rounded-[3rem] p-10 md:p-20 text-center relative overflow-hidden reveal-on-scroll">
+                <div class="absolute inset-0 bg-white/[0.01] pointer-events-none"></div>
+                
+                <h2 class="text-5xl md:text-7xl lg:text-8xl font-display mb-16 leading-[0.85] gradient-text-shift">
+                    Первый поток — <span class="italic">камерный</span>
+                </h2>
+                
+                <div class="max-w-2xl mx-auto space-y-12 mb-20">
+                    <div class="space-y-4">
+                        <div class="flex justify-between font-label text-white/40 mb-2">
+                            <span>ПАКЕТ УЧАСТНИК: 50 МЕСТ</span>
+                            <span class="text-emerald-500">ОСТАЛОСЬ 32</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 w-[36%] shadow-[0_0_20px_#10B981]"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between font-label text-white/40 mb-2">
+                            <span>ОДИН-НА-ОДИН: 10 МЕСТ</span>
+                            <span class="text-[#D4AF37]">ОСТАЛОСЬ 2</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-[#D4AF37] w-[80%] shadow-[0_0_20px_#D4AF37]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
+                    <a href="#pricing" id="final-cta-btn" class="bg-white text-black font-bold py-4 px-14 rounded-full text-base emerald-pulse hover:scale-105 transition-all shadow-[0_0_40px_rgba(16,185,129,0.4)]">
+                        Забронировать за $50 →
+                    </a>
+                    <a href="#" id="final-ghost-btn" class="font-label text-white/60 hover:text-emerald-500 transition-colors flex items-center gap-2 group">
+                        <iconify-icon icon="lucide:send" class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></iconify-icon>
+                        Написать менеджеру
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-24 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16">
+            <div class="space-y-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                        <iconify-icon icon="lucide:ship" class="text-black text-xl"></iconify-icon>
+                    </div>
+                    <span class="font-display font-semibold text-3xl tracking-tighter">AI-КОВЧЕГ</span>
+                </div>
+                <p class="text-white/30 max-w-sm font-light leading-relaxed">
+                    Мы строим будущее, где человек управляет искусственным интеллектом, а не конкурирует с ним.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-20">
+                <div class="space-y-6">
+                    <div class="font-label text-white/20">НАВИГАЦИЯ</div>
+                    <ul class="space-y-4 font-light text-white/50">
+                        <li><a href="#program" id="footer-link-program" class="hover:text-emerald-500 transition-colors">Программа</a></li>
+                        <li><a href="#speakers" id="footer-link-speakers" class="hover:text-emerald-500 transition-colors">Спикеры</a></li>
+                        <li><a href="#pricing" id="footer-link-pricing" class="hover:text-emerald-500 transition-colors">Тарифы</a></li>
+                    </ul>
+                </div>
+                <div class="space-y-6">
+                    <div class="font-label text-white/20">ЮРИДИЧЕСКИЕ</div>
+                    <ul class="space-y-4 font-light text-white/50">
+                        <li><a href="#" id="footer-link-terms" class="hover:text-emerald-500 transition-colors">Договор оферты</a></li>
+                        <li><a href="#" id="footer-link-privacy" class="hover:text-emerald-500 transition-colors">Конфиденциальность</a></li>
+                    </ul>
+                </div>
+                <div class="space-y-6">
+                    <div class="font-label text-white/20">СОЦСЕТИ</div>
+                    <div class="flex gap-4">
+                        <a href="#" id="social-footer-tg" class="w-12 h-12 rounded-full border border-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-black transition-all hover:border-emerald-500">
+                            <iconify-icon icon="lucide:send" class="text-xl"></iconify-icon>
+                        </a>
+                        <a href="#" id="social-footer-inst" class="w-12 h-12 rounded-full border border-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-black transition-all hover:border-emerald-500">
+                            <iconify-icon icon="lucide:instagram" class="text-xl"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <p class="font-label text-[10px] text-white/20 tracking-[0.4em] uppercase">
+                © 2025 AI-КОВЧЕГ. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
+            </p>
+            <p class="font-label text-[10px] text-white/20 tracking-[0.4em] uppercase">
+                СДЕЛАНО ДЛЯ ТЕХ, КТО СТРОИТ БУДУЩЕЕ.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Lenis removed — conflicts with GSAP pin. Native scroll is faster.
+
+        // =============================================
+        // === LIGHTNING WEBGL BACKGROUND ===
+        // =============================================
+        (function initLightning() {
+            const canvas = document.getElementById('lightning-canvas');
+            if (!canvas) return;
+
+            const gl = canvas.getContext('webgl', { antialias: true, alpha: true });
+            if (!gl) { console.warn('WebGL not supported'); return; }
+
+            // Lightning parameters (emerald hue = 160)
+            const CONFIG = { hue: 160, xOffset: 0.3, speed: 0.8, intensity: 1.0, size: 0.9 };
+
+            const vertexShaderSource = `
+                attribute vec2 aPosition;
+                void main() { gl_Position = vec4(aPosition, 0.0, 1.0); }
+            `;
+
+            const fragmentShaderSource = `
+                precision mediump float;
+                uniform vec2 iResolution;
+                uniform float iTime;
+                uniform float uHue;
+                uniform float uXOffset;
+                uniform float uSpeed;
+                uniform float uIntensity;
+                uniform float uSize;
+
+                #define OCTAVE_COUNT 10
+
+                vec3 hsv2rgb(vec3 c) {
+                    vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0,4.0,2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+                    return c.z * mix(vec3(1.0), rgb, c.y);
+                }
+                float hash11(float p) {
+                    p = fract(p * .1031);
+                    p *= p + 33.33;
+                    p *= p + p;
+                    return fract(p);
+                }
+                float hash12(vec2 p) {
+                    vec3 p3 = fract(vec3(p.xyx) * .1031);
+                    p3 += dot(p3, p3.yzx + 33.33);
+                    return fract((p3.x + p3.y) * p3.z);
+                }
+                mat2 rotate2d(float theta) {
+                    float c = cos(theta);
+                    float s = sin(theta);
+                    return mat2(c, -s, s, c);
+                }
+                float noise(vec2 p) {
+                    vec2 ip = floor(p);
+                    vec2 fp = fract(p);
+                    float a = hash12(ip);
+                    float b = hash12(ip + vec2(1.0, 0.0));
+                    float c = hash12(ip + vec2(0.0, 1.0));
+                    float d = hash12(ip + vec2(1.0, 1.0));
+                    vec2 t = smoothstep(0.0, 1.0, fp);
+                    return mix(mix(a, b, t.x), mix(c, d, t.x), t.y);
+                }
+                float fbm(vec2 p) {
+                    float value = 0.0;
+                    float amplitude = 0.5;
+                    for (int i = 0; i < OCTAVE_COUNT; ++i) {
+                        value += amplitude * noise(p);
+                        p *= rotate2d(0.45);
+                        p *= 2.0;
+                        amplitude *= 0.5;
+                    }
+                    return value;
+                }
+                void main() {
+                    vec2 uv = gl_FragCoord.xy / iResolution.xy;
+                    uv = 2.0 * uv - 1.0;
+                    uv.x *= iResolution.x / iResolution.y;
+                    uv.x += uXOffset;
+                    float time = iTime * uSpeed;
+                    uv += 2.0 * fbm(uv * uSize + 0.8 * time) - 1.0;
+                    float dist = abs(uv.x);
+                    vec3 baseColor = hsv2rgb(vec3(uHue / 360.0, 0.7, 0.8));
+                    float flicker = mix(0.0, 0.07, hash11(time));
+                    vec3 col = baseColor * (flicker / max(dist, 0.001)) * uIntensity;
+                    col = pow(col, vec3(1.1));
+                    gl_FragColor = vec4(col, 1.0);
+                }
+            `;
+
+            function compileShader(source, type) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error('Shader error:', gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+
+            const vs = compileShader(vertexShaderSource, gl.VERTEX_SHADER);
+            const fs = compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
+            if (!vs || !fs) return;
+
+            const program = gl.createProgram();
+            gl.attachShader(program, vs);
+            gl.attachShader(program, fs);
+            gl.linkProgram(program);
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                console.error('Link error:', gl.getProgramInfoLog(program));
+                return;
+            }
+            gl.useProgram(program);
+
+            const vertices = new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]);
+            const buf = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            const aPos = gl.getAttribLocation(program, 'aPosition');
+            gl.enableVertexAttribArray(aPos);
+            gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+            const u = {
+                iResolution: gl.getUniformLocation(program, 'iResolution'),
+                iTime: gl.getUniformLocation(program, 'iTime'),
+                uHue: gl.getUniformLocation(program, 'uHue'),
+                uXOffset: gl.getUniformLocation(program, 'uXOffset'),
+                uSpeed: gl.getUniformLocation(program, 'uSpeed'),
+                uIntensity: gl.getUniformLocation(program, 'uIntensity'),
+                uSize: gl.getUniformLocation(program, 'uSize'),
+            };
+
+            function resizeCanvas() {
+                const dw = canvas.clientWidth;
+                const dh = canvas.clientHeight;
+                if (canvas.width !== dw || canvas.height !== dh) {
+                    canvas.width = dw;
+                    canvas.height = dh;
+                    gl.viewport(0, 0, dw, dh);
+                }
+            }
+
+            const t0 = performance.now();
+            function render() {
+                resizeCanvas();
+                gl.uniform2f(u.iResolution, canvas.width, canvas.height);
+                gl.uniform1f(u.iTime, (performance.now() - t0) / 1000);
+                gl.uniform1f(u.uHue, CONFIG.hue);
+                gl.uniform1f(u.uXOffset, CONFIG.xOffset);
+                gl.uniform1f(u.uSpeed, CONFIG.speed);
+                gl.uniform1f(u.uIntensity, CONFIG.intensity);
+                gl.uniform1f(u.uSize, CONFIG.size);
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+                requestAnimationFrame(render);
+            }
+            resizeCanvas();
+            requestAnimationFrame(render);
+        })();
+
+        // =============================================
+        // === APPLE-STYLE GSAP SCROLL SYSTEM ===
+        // =============================================
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Native scroll — no Lenis overhead
+
+        // === SCROLL PROGRESS BAR ===
+        const progressBar = document.getElementById('scroll-progress');
+
+        // === HEADER SCROLL + PROGRESS ===
+        const blobs = document.querySelectorAll('.morph-blob');
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            const scrollY = window.scrollY;
+            if (scrollY > 50) {
+                header.classList.add('bg-black/80', 'backdrop-blur-md', 'border-b', 'border-white/5');
+            } else {
+                header.classList.remove('bg-black/80', 'backdrop-blur-md', 'border-b', 'border-white/5');
+            }
+            const docH = document.documentElement.scrollHeight - window.innerHeight;
+            progressBar.style.width = (docH > 0 ? (scrollY / docH) * 100 : 0) + '%';
+            blobs.forEach((blob, i) => {
+                const speed = i === 0 ? 0.05 : -0.05;
+                blob.style.transform = `translateY(${scrollY * speed}px)`;
+            });
+        });
+
+        // === SPOTLIGHT MOUSE TRACKING + 3D TILT ===
+        document.querySelectorAll('.spotlight-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                const tiltX = ((y - cy) / cy) * -4;
+                const tiltY = ((x - cx) / cx) * 4;
+                card.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+
+        // === COUNTER ANIMATION WITH SCRUB ===
+        document.querySelectorAll('[data-count]').forEach(el => {
+            const target = parseInt(el.dataset.count);
+            const pad = el.dataset.prefix === '0';
+            const suffix = el.dataset.suffix || '';
+            const obj = { val: 0 };
+            gsap.to(obj, {
+                val: target,
+                ease: 'power2.out',
+                onUpdate: () => {
+                    const current = Math.round(obj.val);
+                    el.textContent = ((pad && current < 10) ? '0' + current : '' + current) + suffix;
+                },
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    end: 'top 40%',
+                    scrub: 1
+                }
+            });
+        });
+
+        // === ACTIVE NAV HIGHLIGHTING ===
+        const navSections = ['program', 'speakers', 'pricing', 'faq'];
+        const navLinks = {};
+        navSections.forEach(id => { navLinks[id] = document.getElementById(`nav-${id}-link`); });
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const id = entry.target.id;
+                if (navLinks[id] && entry.isIntersecting) {
+                    Object.values(navLinks).forEach(l => l && l.classList.remove('nav-active'));
+                    navLinks[id].classList.add('nav-active');
+                }
+            });
+        }, { threshold: 0.2, rootMargin: '-80px 0px -50% 0px' });
+        navSections.forEach(id => { const el = document.getElementById(id); if (el) navObserver.observe(el); });
+
+        // =============================================
+        // === HERO ENTRANCE ===
+        // =============================================
+        gsap.set('.hero-title-line-inner', { yPercent: 120 });
+        gsap.set('.hero-fade-up', { y: 60, opacity: 0 });
+        gsap.set('.hero-scale-in', { scale: 0.85, opacity: 0 });
+        gsap.set('.hero-parallax-card', { y: 80, opacity: 0 });
+        gsap.set('#scroll-down-indicator', { opacity: 0 });
+
+        const heroTL = gsap.timeline({ delay: 0.3 });
+        heroTL.to('.hero-title-line-inner', { yPercent: 0, duration: 1.2, ease: 'power4.out', stagger: 0.15 });
+        heroTL.to('.hero-fade-up', { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', stagger: 0.15 }, '-=0.7');
+        heroTL.to('.hero-scale-in', { scale: 1, opacity: 1, duration: 1.2, ease: 'power3.out' }, '-=1.0');
+        heroTL.to('.hero-parallax-card', { y: 0, opacity: 1, duration: 1, ease: 'power3.out', stagger: 0.2 }, '-=0.8');
+        heroTL.to('.hero-stagger-item', { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out' }, '-=0.5');
+        heroTL.to('#scroll-down-indicator', { opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.3');
+        gsap.to('#scroll-dot', { y: 8, duration: 1, repeat: -1, yoyo: true, ease: 'power1.inOut' });
+
+        // =============================================
+        // === APPLE-STYLE SCROLL-DRIVEN VIDEO ===
+        // =============================================
+        const heroVideo = document.getElementById('hero-video-bg');
+        const heroSection = document.getElementById('hero-section');
+
+        // Wait for video metadata to load, then set up scroll-driven playback
+        function setupScrollVideo() {
+            if (!heroVideo || !heroVideo.duration) return;
+
+            const videoDuration = heroVideo.duration;
+            heroVideo.pause(); // Stop autoplay — scroll controls playback
+            heroVideo.currentTime = 0;
+
+            // PINNED hero — video plays frame by frame as you scroll
+            const heroScrollTL = gsap.timeline({
+                scrollTrigger: {
+                    trigger: heroSection,
+                    start: 'top top',
+                    end: '+=300%', // 3x viewport height of scroll to play full video
+                    pin: true,
+                    scrub: 0.5, // Smooth scrub
+                    anticipatePin: 1,
+                    onUpdate: (self) => {
+                        // Scrub video currentTime based on scroll progress
+                        const targetTime = videoDuration * self.progress;
+                        heroVideo.currentTime = targetTime;
+                    }
+                }
+            });
+
+            // Phase 1 (0-30%): Text is visible, video plays in background
+            // Phase 2 (30-50%): Text fades out, video becomes prominent
+            heroScrollTL.to('#hero-section .space-y-10', {
+                y: -200, opacity: 0, scale: 0.95, duration: 0.3, ease: 'power2.in'
+            }, 0.25);
+
+            // Right mockup slides away
+            heroScrollTL.to('.hero-scale-in', {
+                x: 300, opacity: 0, duration: 0.25, ease: 'power2.in'
+            }, 0.25);
+
+            // Parallax cards drift away
+            heroScrollTL.to('.hero-parallax-card', {
+                y: -200, opacity: 0, stagger: 0.05, duration: 0.2, ease: 'power2.in'
+            }, 0.25);
+
+            // Phase 3 (50-70%): Video zooms in dramatically
+            heroScrollTL.to('#hero-video-bg', {
+                scale: 1.5, ease: 'none', duration: 0.4
+            }, 0.3);
+
+            // Phase 4 (70-90%): Overlay darkens, video fades
+            heroScrollTL.to('#hero-video-wrapper', {
+                opacity: 0, duration: 0.25, ease: 'power2.in'
+            }, 0.7);
+
+            // Lightning fades
+            heroScrollTL.to('#lightning-canvas', {
+                opacity: 0, y: -150, duration: 0.4, ease: 'none'
+            }, 0.3);
+
+            // Scroll indicator hides immediately
+            heroScrollTL.to('#scroll-down-indicator', {
+                opacity: 0, y: -20, duration: 0.1
+            }, 0.05);
+
+            // Phase 5 (90-100%): Section shrinks into a card shape
+            heroScrollTL.to(heroSection, {
+                scale: 0.92, borderRadius: '40px', duration: 0.15, ease: 'none'
+            }, 0.85);
+        }
+
+        // Try to set up immediately, or wait for loadedmetadata
+        if (heroVideo && heroVideo.readyState >= 1) {
+            setupScrollVideo();
+        } else if (heroVideo) {
+            heroVideo.addEventListener('loadedmetadata', setupScrollVideo);
+            // Fallback: also try after a short delay in case event was missed
+            setTimeout(() => {
+                if (heroVideo.duration) setupScrollVideo();
+            }, 2000);
+        }
+
+        // =============================================
+        // === CREDIBILITY BAR — SCRUB scale slam ===
+        // =============================================
+        const credSection = document.querySelector('.border-y.border-white\\/5');
+        if (credSection) {
+            const credItems = credSection.querySelectorAll('.reveal-on-scroll');
+            credItems.forEach((item, i) => {
+                gsap.from(item, {
+                    y: 80, opacity: 0, scale: 0.5,
+                    scrollTrigger: {
+                        trigger: credSection,
+                        start: `top ${85 - i * 5}%`,
+                        end: `top ${55 - i * 5}%`,
+                        scrub: 1
+                    }
+                });
+            });
+        }
+
+        // =============================================
+        // === PROBLEM SECTION — scrub cards from sides ===
+        // =============================================
+        const problemSection = document.getElementById('problem-section');
+        if (problemSection) {
+            const problemHeading = problemSection.querySelector('.max-w-4xl');
+            if (problemHeading) {
+                gsap.from(problemHeading, {
+                    y: 80, opacity: 0,
+                    scrollTrigger: { trigger: problemHeading, start: 'top 85%', end: 'top 50%', scrub: 1 }
+                });
+            }
+            problemSection.querySelectorAll('.spotlight-card').forEach((card, i) => {
+                gsap.from(card, {
+                    x: i % 2 === 0 ? -120 : 120, y: 60, opacity: 0, scale: 0.9,
+                    scrollTrigger: { trigger: card, start: 'top 90%', end: 'top 55%', scrub: 1 }
+                });
+            });
+        }
+
+        // =============================================
+        // === FOR WHOM — SCRUB scale from center ===
+        // =============================================
+        (function() {
+            const sections = document.querySelectorAll('.py-32.bg-white\\/\\[0\\.01\\]');
+            const forWhomSection = sections[0]; // first one is "for whom"
+            if (forWhomSection) {
+                const fwH2 = forWhomSection.querySelector('h2');
+                if (fwH2) {
+                    gsap.from(fwH2, {
+                        y: 80, opacity: 0, scale: 0.8,
+                        scrollTrigger: { trigger: fwH2, start: 'top 85%', end: 'top 50%', scrub: 1 }
+                    });
+                }
+                const fwCards = forWhomSection.querySelectorAll('.glass-card');
+                fwCards.forEach((card, i) => {
+                    gsap.from(card, {
+                        scale: 0.5, opacity: 0, y: 120, rotateX: 25,
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 90%',
+                            end: 'top 50%',
+                            scrub: 1
+                        }
+                    });
+                });
+            }
+        })();
+
+        // =============================================
+        // === COMPARISON — scrub rows in ===
+        // =============================================
+        const compSection = document.getElementById('comparison-section');
+        if (compSection) {
+            const compH2 = compSection.querySelector('h2');
+            if (compH2) {
+                gsap.from(compH2, { y: 80, opacity: 0, scrollTrigger: { trigger: compH2, start: 'top 85%', end: 'top 50%', scrub: 1 } });
+            }
+            compSection.querySelectorAll('table tbody tr').forEach((row, i) => {
+                gsap.from(row, {
+                    x: -100, opacity: 0,
+                    scrollTrigger: { trigger: row, start: 'top 92%', end: 'top 70%', scrub: 1 }
+                });
+            });
+        }
+
+        // =============================================
+        // === PROGRAM — timeline draw on scrub + module stagger ===
+        // =============================================
+        const programSection = document.getElementById('program');
+        if (programSection) {
+            const progH2 = programSection.querySelector('h2');
+            if (progH2) {
+                gsap.from(progH2, {
+                    y: 80, opacity: 0, scale: 0.9,
+                    scrollTrigger: { trigger: progH2, start: 'top 85%', end: 'top 50%', scrub: 1 }
+                });
+            }
+
+            // Modules reveal on scrub
+            const modules = programSection.querySelectorAll('.accordion-item');
+            modules.forEach((mod, i) => {
+                // Module slides in
+                gsap.from(mod, {
+                    x: -100, opacity: 0,
+                    scrollTrigger: {
+                        trigger: mod,
+                        start: 'top 90%',
+                        end: 'top 65%',
+                        scrub: 1
+                    }
+                });
+
+                // Timeline dot pops
+                const dot = mod.querySelector('[class*="rounded-full"][class*="bg-emerald"], [class*="rounded-full"][class*="border-emerald"]');
+                if (dot) {
+                    gsap.from(dot, {
+                        scale: 0,
+                        scrollTrigger: {
+                            trigger: mod,
+                            start: 'top 85%',
+                            end: 'top 70%',
+                            scrub: 1
+                        }
+                    });
+                }
+            });
+
+            // Stats bar scrub
+            const statsBar = programSection.querySelector('.glass-card.p-10');
+            if (statsBar) {
+                gsap.from(statsBar.querySelectorAll(':scope > div > div'), {
+                    y: 50, opacity: 0, scale: 0.8, stagger: 0.05,
+                    scrollTrigger: { trigger: statsBar, start: 'top 90%', end: 'top 60%', scrub: 1 }
+                });
+            }
+        }
+
+        // =============================================
+        // === WEEKLY CYCLE — scrub steps ===
+        // =============================================
+        const weeklySection = document.getElementById('weekly-section');
+        if (weeklySection) {
+            const weeklyH2 = weeklySection.querySelector('h2');
+            if (weeklyH2) {
+                gsap.from(weeklyH2, { y: 60, opacity: 0, scrollTrigger: { trigger: weeklyH2, start: 'top 85%', end: 'top 55%', scrub: 1 } });
+            }
+            const weeklyGrid = weeklySection.querySelector('.grid-cols-1');
+            if (weeklyGrid) {
+                Array.from(weeklyGrid.children).forEach((step, i) => {
+                    gsap.from(step, {
+                        y: 60, opacity: 0, scale: 0.7,
+                        scrollTrigger: { trigger: step, start: 'top 90%', end: 'top 65%', scrub: 1 }
+                    });
+                });
+            }
+        }
+
+        // =============================================
+        // === SPEAKERS — scrub reveal ===
+        // =============================================
+        const speakersSection = document.getElementById('speakers');
+        if (speakersSection) {
+            const speakerH2 = speakersSection.querySelector('h2');
+            if (speakerH2) {
+                gsap.from(speakerH2, { y: 80, opacity: 0, scale: 0.9, scrollTrigger: { trigger: speakerH2, start: 'top 85%', end: 'top 55%', scrub: 1 } });
+            }
+            speakersSection.querySelectorAll('.speaker-card').forEach((card, i) => {
+                gsap.from(card, {
+                    y: 120, opacity: 0, scale: 0.85,
+                    scrollTrigger: { trigger: card, start: 'top 90%', end: 'top 55%', scrub: 1 }
+                });
+                const imgWrap = card.querySelector('.speaker-img-wrap');
+                if (imgWrap) {
+                    gsap.from(imgWrap, {
+                        clipPath: 'inset(100% 0 0 0)',
+                        scrollTrigger: { trigger: card, start: 'top 90%', end: 'top 55%', scrub: 1 }
+                    });
+                }
+            });
+        }
+
+        // =============================================
+        // === SOCIAL PROOF — scrub masonry ===
+        // =============================================
+        const bigNumber = document.querySelector('[class*="text-\\[12rem\\]"]');
+        if (bigNumber) {
+            gsap.from(bigNumber, {
+                scale: 0.2, opacity: 0,
+                scrollTrigger: { trigger: bigNumber, start: 'top 90%', end: 'top 40%', scrub: 1 }
+            });
+        }
+        document.querySelectorAll('.columns-1 .glass-card').forEach((item, i) => {
+            gsap.from(item, {
+                y: 120, opacity: 0, scale: 0.85, rotateZ: (i % 2 === 0 ? -3 : 3),
+                scrollTrigger: { trigger: item, start: 'top 95%', end: 'top 65%', scrub: 1 }
+            });
+        });
+
+        // =============================================
+        // === VALUE STACK — scrub line reveals ===
+        // =============================================
+        document.querySelectorAll('.value-line').forEach((line, i) => {
+            gsap.from(line, {
+                x: -100, opacity: 0,
+                scrollTrigger: { trigger: line, start: 'top 90%', end: 'top 70%', scrub: 1,
+                    onEnter: () => line.classList.add('active') }
+            });
+        });
+
+        // =============================================
+        // === PRICING — scrub cards rise ===
+        // =============================================
+        const pricingSection = document.getElementById('pricing');
+        if (pricingSection) {
+            const pricingH2 = pricingSection.querySelector('h2');
+            if (pricingH2) {
+                gsap.from(pricingH2, { y: 80, opacity: 0, scrollTrigger: { trigger: pricingH2, start: 'top 85%', end: 'top 55%', scrub: 1 } });
+            }
+            const pricingGrid = pricingSection.querySelector('.grid.md\\:grid-cols-3');
+            if (pricingGrid) {
+                Array.from(pricingGrid.children).forEach((card, i) => {
+                    gsap.from(card, {
+                        y: 150, opacity: 0, scale: 0.85,
+                        scrollTrigger: { trigger: card, start: 'top 95%', end: 'top 55%', scrub: 1 }
+                    });
+                });
+            }
+        }
+
+        // =============================================
+        // === GUARANTEE — scrub slide in ===
+        // =============================================
+        const guaranteeCard = document.querySelector('.boarding-pass-mask');
+        if (guaranteeCard) {
+            gsap.from(guaranteeCard, {
+                x: -300, opacity: 0, rotateY: -20, scale: 0.85,
+                scrollTrigger: { trigger: guaranteeCard, start: 'top 85%', end: 'top 40%', scrub: 1 }
+            });
+        }
+        const guaranteeQuote = guaranteeCard?.closest('section')?.querySelector('.text-4xl, .text-6xl');
+        if (guaranteeQuote) {
+            gsap.from(guaranteeQuote, {
+                y: 80, opacity: 0, scale: 0.9,
+                scrollTrigger: { trigger: guaranteeQuote, start: 'top 90%', end: 'top 55%', scrub: 1 }
+            });
+        }
+
+        // =============================================
+        // === FAQ — scrub accordion items ===
+        // =============================================
+        const faqSection = document.getElementById('faq');
+        if (faqSection) {
+            const faqH2 = faqSection.querySelector('h2');
+            if (faqH2) {
+                gsap.from(faqH2, {
+                    y: 80, opacity: 0,
+                    scrollTrigger: { trigger: faqH2, start: 'top 85%', end: 'top 55%', scrub: 1 }
+                });
+            }
+            faqSection.querySelectorAll('.accordion-item').forEach((item, i) => {
+                gsap.from(item, {
+                    y: 50, opacity: 0, x: i % 2 === 0 ? -40 : 40,
+                    scrollTrigger: { trigger: item, start: 'top 95%', end: 'top 75%', scrub: 1 }
+                });
+            });
+        }
+
+        // =============================================
+        // === FINAL CTA — scale up from nothing ===
+        // =============================================
+        const finalCTA = document.querySelector('.gradient-text-shift')?.closest('.glass-card');
+        if (finalCTA) {
+            gsap.from(finalCTA, {
+                scale: 0.7, opacity: 0, y: 100, borderRadius: '80px',
+                scrollTrigger: { trigger: finalCTA, start: 'top 90%', end: 'top 40%', scrub: 1 }
+            });
+
+            // Progress bars grow on scrub
+            finalCTA.querySelectorAll('.h-full[class*="bg-emerald"], .h-full[class*="bg-\\["]').forEach(bar => {
+                gsap.from(bar, {
+                    width: '0%',
+                    scrollTrigger: { trigger: bar, start: 'top 85%', end: 'top 65%', scrub: 1 }
+                });
+            });
+        }
+
+        // =============================================
+        // === FOOTER — subtle rise on scrub ===
+        // =============================================
+        const footer = document.querySelector('footer');
+        if (footer) {
+            gsap.from(footer.children, {
+                y: 40, opacity: 0, stagger: 0.05,
+                scrollTrigger: { trigger: footer, start: 'top 95%', end: 'top 70%', scrub: 1 }
+            });
+        }
+
+        // =============================================
+        // === GLOBAL: subtle heading parallax ===
+        // =============================================
+        document.querySelectorAll('section:not([id="problem-section"]):not([id="comparison-section"]):not([id="weekly-section"]):not([id="speakers"]):not([id="pricing"]) h2').forEach(h2 => {
+            gsap.to(h2, {
+                y: -25, ease: 'none',
+                scrollTrigger: { trigger: h2.closest('section'), start: 'top bottom', end: 'bottom top', scrub: 2 }
+            });
+        });
+
+        // =============================================
+        // === MAGNETIC BUTTONS ===
+        // =============================================
+        document.querySelectorAll('.emerald-pulse, a.bg-white[href="#pricing"]').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                gsap.to(btn, { x: x * 0.3, y: y * 0.3, scale: 1.05, duration: 0.3, ease: 'power2.out' });
+            });
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, { x: 0, y: 0, scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
+            });
+        });
+
+        // =============================================
+        // === REVEAL ON SCROLL (fallback) ===
+        // =============================================
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => revealObserver.observe(el));
+    </script>
+</body>
+</html>
