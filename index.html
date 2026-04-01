@@ -433,7 +433,7 @@
     <section id="hero-section" class="hero-section h-screen min-h-[700px] flex items-center pt-20 pb-10 px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0;">
-            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
+            <video id="hero-video-bg" muted playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
                 <source src="hero_bg.mp4" type="video/mp4">
             </video>
             <!-- Dark overlay so text is readable -->
@@ -1838,43 +1838,75 @@
         gsap.to('#scroll-dot', { y: 8, duration: 1, repeat: -1, yoyo: true, ease: 'power1.inOut' });
 
         // =============================================
-        // === HERO SCROLL PARALLAX (image-based) ===
+        // === SCROLL-DRIVEN VIDEO (Apple style) ===
         // =============================================
-        // Background image zooms + parallax on scroll
-        gsap.to('#hero-video-bg', {
-            scale: 1.3, y: -100, ease: 'none',
-            scrollTrigger: { trigger: '#hero-section', start: 'top top', end: 'bottom top', scrub: 1 }
-        });
-        // Overlay darkens on scroll
-        gsap.to('#hero-video-wrapper', {
-            opacity: 0, ease: 'none',
-            scrollTrigger: { trigger: '#hero-section', start: '40% top', end: '90% top', scrub: 1 }
-        });
-        // Lightning fades
-        gsap.to('#lightning-canvas', {
-            y: -200, opacity: 0, ease: 'none',
-            scrollTrigger: { trigger: '#hero-section', start: 'top top', end: 'bottom top', scrub: 1 }
-        });
-        // Scroll indicator hides
-        gsap.to('#scroll-down-indicator', {
-            opacity: 0, y: -20,
-            scrollTrigger: { trigger: '#hero-section', start: '5% top', end: '15% top', scrub: true }
-        });
-        // Text slides up and fades
-        gsap.to('#hero-section .space-y-10', {
-            y: -150, opacity: 0, ease: 'none',
-            scrollTrigger: { trigger: '#hero-section', start: '15% top', end: '60% top', scrub: 1 }
-        });
-        // Right mockup slides away
-        gsap.to('.hero-scale-in', {
-            x: 200, opacity: 0, ease: 'none',
-            scrollTrigger: { trigger: '#hero-section', start: '15% top', end: '50% top', scrub: 1 }
-        });
-        // Hero section shrinks into card on exit
-        gsap.to('#hero-section', {
-            scale: 0.92, borderRadius: '40px', ease: 'none',
-            scrollTrigger: { trigger: '#hero-section', start: '60% top', end: 'bottom top', scrub: 1 }
-        });
+        const heroVideo = document.getElementById('hero-video-bg');
+        const heroSection = document.getElementById('hero-section');
+
+        function initScrollVideo() {
+            if (!heroVideo || !heroVideo.duration) return;
+            heroVideo.pause();
+            heroVideo.currentTime = 0;
+
+            // Pin hero, scrub video frame-by-frame
+            ScrollTrigger.create({
+                trigger: heroSection,
+                start: 'top top',
+                end: '+=300%',
+                pin: true,
+                scrub: 0.3,
+                onUpdate: (self) => {
+                    if (heroVideo.duration) {
+                        heroVideo.currentTime = heroVideo.duration * self.progress;
+                    }
+                }
+            });
+
+            // Text fades out in first 30% of scroll
+            gsap.to('#hero-section .space-y-10', {
+                y: -150, opacity: 0, ease: 'none',
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=90%', scrub: 0.3 }
+            });
+
+            // Right mockup slides away
+            gsap.to('.hero-scale-in', {
+                x: 200, opacity: 0, ease: 'none',
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=70%', scrub: 0.3 }
+            });
+
+            // Parallax cards drift
+            gsap.to('.hero-parallax-card', {
+                y: -200, opacity: 0, ease: 'none',
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=80%', scrub: 0.3 }
+            });
+
+            // Lightning fades
+            gsap.to('#lightning-canvas', {
+                opacity: 0, ease: 'none',
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=50%', scrub: 0.3 }
+            });
+
+            // Scroll indicator hides fast
+            gsap.to('#scroll-down-indicator', {
+                opacity: 0, y: -20,
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=10%', scrub: true }
+            });
+
+            // Video overlay darkens near end
+            gsap.to('#hero-video-wrapper', {
+                opacity: 0, ease: 'none',
+                scrollTrigger: { trigger: heroSection, start: '+=240%', end: '+=300%', scrub: 0.3 }
+            });
+        }
+
+        // Wait for video to be ready
+        if (heroVideo) {
+            if (heroVideo.readyState >= 1) {
+                initScrollVideo();
+            } else {
+                heroVideo.addEventListener('loadedmetadata', initScrollVideo);
+            }
+        }
 
         // =============================================
         // === CREDIBILITY BAR — SCRUB scale slam ===
