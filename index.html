@@ -1852,7 +1852,7 @@
             ScrollTrigger.create({
                 trigger: heroSection,
                 start: 'top top',
-                end: '+=300%',
+                end: '+=200%',
                 pin: true,
                 scrub: 0.3,
                 onUpdate: (self) => {
@@ -1862,28 +1862,28 @@
                 }
             });
 
-            // Text fades out in first 30% of scroll
+            // Text fades out quickly
             gsap.to('#hero-section .space-y-10', {
                 y: -150, opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=90%', scrub: 0.3 }
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=60%', scrub: 0.3 }
             });
 
             // Right mockup slides away
             gsap.to('.hero-scale-in', {
                 x: 200, opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=70%', scrub: 0.3 }
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=50%', scrub: 0.3 }
             });
 
             // Parallax cards drift
             gsap.to('.hero-parallax-card', {
                 y: -200, opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=80%', scrub: 0.3 }
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=50%', scrub: 0.3 }
             });
 
             // Lightning fades
             gsap.to('#lightning-canvas', {
                 opacity: 0, ease: 'none',
-                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=50%', scrub: 0.3 }
+                scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=30%', scrub: 0.3 }
             });
 
             // Scroll indicator hides fast
