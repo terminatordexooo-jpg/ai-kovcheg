@@ -1895,13 +1895,33 @@
             // Video stays visible — no fade to black
         }
 
-        // Wait for video to be ready
+        // Wait for video to be ready — multiple fallbacks
         if (heroVideo) {
-            if (heroVideo.readyState >= 1) {
-                initScrollVideo();
-            } else {
-                heroVideo.addEventListener('loadedmetadata', initScrollVideo);
+            let scrollVideoInitialized = false;
+            function tryInit() {
+                if (scrollVideoInitialized) return;
+                if (heroVideo.duration && heroVideo.duration > 0) {
+                    scrollVideoInitialized = true;
+                    initScrollVideo();
+                    console.log('Scroll video initialized! Duration:', heroVideo.duration);
+                }
             }
+            heroVideo.addEventListener('loadedmetadata', tryInit);
+            heroVideo.addEventListener('loadeddata', tryInit);
+            heroVideo.addEventListener('canplay', tryInit);
+            if (heroVideo.readyState >= 1) tryInit();
+            // Fallback: keep checking every 500ms
+            const checkInterval = setInterval(() => {
+                if (scrollVideoInitialized) { clearInterval(checkInterval); return; }
+                tryInit();
+            }, 500);
+            // Final fallback after 5s — force load
+            setTimeout(() => {
+                if (!scrollVideoInitialized) {
+                    heroVideo.load();
+                    heroVideo.addEventListener('loadedmetadata', tryInit);
+                }
+            }, 5000);
         }
 
         // =============================================
