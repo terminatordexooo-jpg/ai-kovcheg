@@ -432,8 +432,8 @@
     <!-- 2. HERO -->
     <section id="hero-section" class="hero-section h-screen min-h-[700px] flex items-center pt-20 pb-10 px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
-        <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0;">
-            <video id="hero-video-bg" muted playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
+        <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0; background: url('hero_source.jpg') center/cover no-repeat;">
+            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
                 <source src="hero_scroll.mp4" type="video/mp4">
             </video>
             <!-- Dark overlay so text is readable -->
@@ -1840,38 +1840,37 @@
         // =============================================
         // === APPLE-STYLE SCROLL-DRIVEN VIDEO ===
         // =============================================
+        // Strategy: video autoplays normally (never black), then once
+        // the user starts scrolling, we take over with scroll control.
         const heroVideo = document.getElementById('hero-video-bg');
         let scrollVideoReady = false;
 
-        // Force pause — prevent browser from auto-playing muted video
-        heroVideo.pause();
-        heroVideo.currentTime = 0;
-
-        // If browser tries to play on its own, stop it
-        heroVideo.addEventListener('play', () => {
-            if (!scrollVideoReady) return;
-            heroVideo.pause();
-        });
-
         function initScrollVideo() {
-            if (scrollVideoReady) return; // prevent double init
+            if (scrollVideoReady) return;
             const dur = heroVideo.duration;
             if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
 
             scrollVideoReady = true;
+            // Now pause — scroll takes over
             heroVideo.pause();
-            heroVideo.currentTime = 0;
 
-            console.log('[AI-Kovcheg] Scroll video init — duration:', dur.toFixed(2) + 's');
+            console.log('[AI-Kovcheg] Scroll video active — duration:', dur.toFixed(2) + 's');
 
             const heroScrollTL = gsap.timeline({
                 scrollTrigger: {
                     trigger: '#hero-section',
                     start: 'top top',
-                    end: '+=300%',
+                    end: '+=250%',
                     pin: true,
-                    scrub: 0.5,
-                    anticipatePin: 1
+                    pinSpacing: true,
+                    scrub: 0.3,
+                    anticipatePin: 1,
+                    onEnterBack: () => { heroVideo.pause(); },
+                    onLeaveBack: () => {
+                        // User scrolled back to top — let video autoplay again
+                        heroVideo.currentTime = 0;
+                        heroVideo.play();
+                    }
                 }
             });
 
@@ -1879,64 +1878,68 @@
             const vObj = { t: 0 };
             heroScrollTL.to(vObj, {
                 t: dur, ease: 'none', duration: 1,
-                onUpdate: () => {
-                    if (Math.abs(heroVideo.currentTime - vObj.t) > 0.05) {
-                        heroVideo.currentTime = vObj.t;
-                    }
-                }
+                onUpdate: () => { heroVideo.currentTime = vObj.t; }
             }, 0);
 
-            // Fade out hero text (10%→35%)
+            // Fade out hero text (15%→40%)
             heroScrollTL.to('#hero-section .space-y-10', {
-                y: -150, opacity: 0, ease: 'power2.in', duration: 0.25
-            }, 0.1);
-
-            // Slide out right UI cards (15%→40%)
-            heroScrollTL.to('.hero-scale-in', {
-                x: 150, opacity: 0, ease: 'power2.in', duration: 0.25
+                y: -120, opacity: 0, ease: 'power2.in', duration: 0.25
             }, 0.15);
 
-            // Hide scroll indicator immediately
+            // Slide out right UI cards (20%→45%)
+            heroScrollTL.to('.hero-scale-in', {
+                x: 120, opacity: 0, ease: 'power2.in', duration: 0.25
+            }, 0.2);
+
+            // Hide scroll indicator
             heroScrollTL.to('#scroll-down-indicator', {
                 opacity: 0, y: -20, duration: 0.1
-            }, 0);
+            }, 0.05);
 
-            // Lightning fades (40%→70%)
+            // Lightning fades (45%→70%)
             heroScrollTL.to('#lightning-canvas', {
-                opacity: 0, duration: 0.3
-            }, 0.4);
+                opacity: 0, duration: 0.25
+            }, 0.45);
 
-            // Cinematic zoom on video (50%→90%)
+            // Cinematic zoom on video (50%→85%)
             heroScrollTL.to('#hero-video-bg', {
-                scale: 1.2, ease: 'none', duration: 0.4
+                scale: 1.15, ease: 'none', duration: 0.35
             }, 0.5);
 
-            // Fade out video + scale-down hero (85%→100%)
+            // Fade out video + scale-down hero (80%→100%)
             heroScrollTL.to('#hero-video-wrapper', {
-                opacity: 0, duration: 0.15
-            }, 0.85);
+                opacity: 0, duration: 0.2
+            }, 0.8);
             heroScrollTL.to('#hero-section', {
-                scale: 0.92, borderRadius: '40px', ease: 'power2.inOut', duration: 0.15
-            }, 0.85);
+                scale: 0.95, borderRadius: '30px', ease: 'power2.inOut', duration: 0.2
+            }, 0.8);
 
-            setTimeout(() => ScrollTrigger.refresh(), 100);
+            setTimeout(() => ScrollTrigger.refresh(), 200);
         }
 
-        // Multiple fallbacks to catch video ready state
-        if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
-            initScrollVideo();
-        } else {
-            heroVideo.addEventListener('loadedmetadata', initScrollVideo);
-            heroVideo.addEventListener('loadeddata', initScrollVideo);
-            heroVideo.addEventListener('canplay', initScrollVideo);
-            // Polling fallback — some browsers don't fire events reliably
-            const poll = setInterval(() => {
-                if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
-                    clearInterval(poll);
-                    initScrollVideo();
-                }
-            }, 150);
-            setTimeout(() => clearInterval(poll), 15000);
+        // Wait for first scroll to take over (video autoplays until then)
+        let firstScrollDone = false;
+        function onFirstScroll() {
+            if (firstScrollDone) return;
+            if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
+                firstScrollDone = true;
+                window.removeEventListener('scroll', onFirstScroll);
+                initScrollVideo();
+            }
+        }
+        window.addEventListener('scroll', onFirstScroll, { passive: true });
+
+        // Also try init after load in case user hasn't scrolled yet
+        heroVideo.addEventListener('canplay', () => {
+            // Don't auto-init — wait for scroll
+        });
+        // But if page loads already scrolled (e.g. refresh mid-page)
+        if (window.scrollY > 10) {
+            if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
+                initScrollVideo();
+            } else {
+                heroVideo.addEventListener('canplay', () => initScrollVideo(), { once: true });
+            }
         }
 
         // =============================================
