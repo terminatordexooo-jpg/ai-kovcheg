@@ -1841,11 +1841,28 @@
         // === APPLE-STYLE SCROLL-DRIVEN VIDEO ===
         // =============================================
         const heroVideo = document.getElementById('hero-video-bg');
+        let scrollVideoReady = false;
+
+        // Force pause — prevent browser from auto-playing muted video
         heroVideo.pause();
+        heroVideo.currentTime = 0;
+
+        // If browser tries to play on its own, stop it
+        heroVideo.addEventListener('play', () => {
+            if (!scrollVideoReady) return;
+            heroVideo.pause();
+        });
 
         function initScrollVideo() {
+            if (scrollVideoReady) return; // prevent double init
             const dur = heroVideo.duration;
-            if (!dur || isNaN(dur)) return;
+            if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
+
+            scrollVideoReady = true;
+            heroVideo.pause();
+            heroVideo.currentTime = 0;
+
+            console.log('[AI-Kovcheg] Scroll video init — duration:', dur.toFixed(2) + 's');
 
             const heroScrollTL = gsap.timeline({
                 scrollTrigger: {
@@ -1854,8 +1871,7 @@
                     end: '+=300%',
                     pin: true,
                     scrub: 0.5,
-                    anticipatePin: 1,
-                    onLeave: () => ScrollTrigger.refresh()
+                    anticipatePin: 1
                 }
             });
 
@@ -1863,7 +1879,11 @@
             const vObj = { t: 0 };
             heroScrollTL.to(vObj, {
                 t: dur, ease: 'none', duration: 1,
-                onUpdate: () => { heroVideo.currentTime = vObj.t; }
+                onUpdate: () => {
+                    if (Math.abs(heroVideo.currentTime - vObj.t) > 0.05) {
+                        heroVideo.currentTime = vObj.t;
+                    }
+                }
             }, 0);
 
             // Fade out hero text (10%→35%)
@@ -1899,13 +1919,24 @@
                 scale: 0.92, borderRadius: '40px', ease: 'power2.inOut', duration: 0.15
             }, 0.85);
 
-            ScrollTrigger.refresh();
+            setTimeout(() => ScrollTrigger.refresh(), 100);
         }
 
-        if (heroVideo.readyState >= 1) {
+        // Multiple fallbacks to catch video ready state
+        if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
             initScrollVideo();
         } else {
-            heroVideo.addEventListener('loadedmetadata', initScrollVideo, { once: true });
+            heroVideo.addEventListener('loadedmetadata', initScrollVideo);
+            heroVideo.addEventListener('loadeddata', initScrollVideo);
+            heroVideo.addEventListener('canplay', initScrollVideo);
+            // Polling fallback — some browsers don't fire events reliably
+            const poll = setInterval(() => {
+                if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
+                    clearInterval(poll);
+                    initScrollVideo();
+                }
+            }, 150);
+            setTimeout(() => clearInterval(poll), 15000);
         }
 
         // =============================================
