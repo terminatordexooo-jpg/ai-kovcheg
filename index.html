@@ -433,7 +433,9 @@
     <section id="hero-section" class="hero-section h-screen min-h-[700px] flex items-center pt-20 pb-10 px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0;">
-            <img id="hero-bg-img" src="hero_source.jpg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" alt="">
+            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
+                <source src="hero_bg.mp4" type="video/mp4">
+            </video>
             <!-- Dark overlay so text is readable -->
             <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/50 via-[#050505]/30 to-[#050505]/90"></div>
         </div>
@@ -1839,7 +1841,7 @@
         // === HERO SCROLL PARALLAX (image-based) ===
         // =============================================
         // Background image zooms + parallax on scroll
-        gsap.to('#hero-bg-img', {
+        gsap.to('#hero-video-bg', {
             scale: 1.3, y: -100, ease: 'none',
             scrollTrigger: { trigger: '#hero-section', start: 'top top', end: 'bottom top', scrub: 1 }
         });
