@@ -149,8 +149,8 @@
         }
 
         .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
+            opacity: 1;
+            transform: translateY(0);
             transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -394,6 +394,61 @@
         .pin-spacer {
             background: transparent !important;
         }
+
+        /* Mobile burger menu */
+        .burger-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 60;
+            padding: 4px;
+        }
+        .burger-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        .burger-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .burger-btn.active span:nth-child(2) { opacity: 0; }
+        .burger-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 5, 0.97);
+            backdrop-filter: blur(20px);
+            z-index: 55;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .mobile-menu.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .mobile-menu a {
+            font-family: 'Newsreader', serif;
+            font-size: 2rem;
+            color: rgba(255,255,255,0.7);
+            transition: color 0.3s;
+        }
+        .mobile-menu a:hover { color: #10B981; }
+
+        @media (max-width: 767px) {
+            .burger-btn { display: flex; }
+            #nav-cta-btn { display: none; }
+            .hero-section { min-h-[600px]; }
+            #lightning-canvas { display: none !important; }
+        }
     </style>
 </head>
 <body class="bg-[#050505]">
@@ -426,14 +481,27 @@
             <a href="#pricing" id="nav-cta-btn" class="bg-white text-black font-semibold py-2.5 px-6 rounded-full text-[10px] uppercase tracking-widest hover:scale-105 transition-all">
                 Предзапись — $50
             </a>
+            <div class="burger-btn" id="burger-btn">
+                <span></span><span></span><span></span>
+            </div>
         </div>
     </header>
 
+    <!-- Mobile fullscreen menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="#program" class="mobile-menu-link">Программа</a>
+        <a href="#speakers" class="mobile-menu-link">Спикеры</a>
+        <a href="#pricing" class="mobile-menu-link">Пакеты</a>
+        <a href="#faq" class="mobile-menu-link">FAQ</a>
+        <a href="#pricing" class="mt-4 bg-white text-black font-semibold py-3 px-10 rounded-full text-sm mobile-menu-link">Предзапись — $50</a>
+    </div>
+
     <!-- 2. HERO -->
-    <section id="hero-section" class="hero-section h-screen min-h-[700px] flex items-center pt-20 pb-10 px-6 relative overflow-hidden">
+    <section id="hero-section" class="hero-section h-screen min-h-[600px] flex items-center pt-20 pb-10 px-4 md:px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0; background: url('hero_source.jpg') center/cover no-repeat;">
             <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
+                <source src="hero_bg_new.mp4" type="video/mp4">
                 <source src="hero_scroll.mp4" type="video/mp4">
             </video>
             <!-- Dark overlay so text is readable -->
@@ -447,12 +515,12 @@
                     <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_12px_#10B981]"></div>
                     <span class="font-label text-emerald-500">8-недельная программа трансформации</span>
                 </div>
-                <h1 class="text-5xl md:text-6xl lg:text-7xl font-display text-white leading-[0.9]">
+                <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-display text-white leading-[0.9]">
                     <span class="hero-title-line"><span class="hero-title-line-inner">Передай операционку</span></span>
                     <span class="hero-title-line"><span class="hero-title-line-inner">нейросетям. Займись</span></span>
                     <span class="hero-title-line"><span class="hero-title-line-inner"><span class="italic text-emerald-500">стратегией</span>.</span></span>
                 </h1>
-                <p class="hero-fade-up text-lg md:text-xl text-white/50 font-light leading-relaxed max-w-xl" data-hero-delay="0.4">
+                <p class="hero-fade-up text-base md:text-xl text-white/50 font-light leading-relaxed max-w-xl" data-hero-delay="0.4">
                     Онлайн-программа по освоению AI-навыков и кратному увеличению эффективности бизнеса. Workshop + Workflow формат — не курс, не лекции. Нейросети станут вашими бесплатными сотрудниками.
                 </p>
                 <div class="hero-fade-up flex flex-col sm:flex-row gap-6 pt-4" data-hero-delay="0.6">
@@ -463,7 +531,7 @@
                         Узнать подробности
                     </a>
                 </div>
-                <div class="hero-fade-up pt-12 flex flex-wrap gap-x-10 gap-y-4 font-label text-white/30" data-hero-delay="0.8">
+                <div class="hero-fade-up pt-6 md:pt-12 flex flex-wrap gap-x-6 md:gap-x-10 gap-y-3 font-label text-white/30 text-[9px] md:text-[11px]" data-hero-delay="0.8">
                     <span class="hero-stagger-item flex items-center gap-2"><iconify-icon icon="lucide:calendar" class="text-emerald-500"></iconify-icon> СТАРТ: 17 МАРТА</span>
                     <span class="hero-stagger-item flex items-center gap-2"><iconify-icon icon="lucide:monitor" class="text-emerald-500"></iconify-icon> ОНЛАЙН</span>
                     <span class="hero-stagger-item flex items-center gap-2"><iconify-icon icon="lucide:clock" class="text-emerald-500"></iconify-icon> 8 НЕДЕЛЬ</span>
@@ -560,9 +628,9 @@
     </section>
 
     <!-- 4. PROBLEM (Spotlight Cards) -->
-    <section id="problem-section" class="py-32 px-6">
+    <section id="problem-section" class="py-16 px-6">
         <div class="max-w-7xl mx-auto">
-            <div class="max-w-4xl mb-24 reveal-on-scroll">
+            <div class="max-w-4xl mb-12 reveal-on-scroll">
                 <span class="font-label text-emerald-500 block mb-6 uppercase tracking-[0.3em]">КОНТЕКСТ РЫНКА</span>
                 <h2 class="text-5xl md:text-8xl font-display mb-12">
                     Эпоха тотальной <span class="italic text-emerald-500">автоматизации</span>
@@ -606,9 +674,9 @@
     </section>
 
     <!-- 5. FOR WHOM -->
-    <section class="py-32 bg-white/[0.01]">
+    <section class="py-16 bg-white/[0.01]">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-24 reveal-on-scroll">
+            <div class="text-center mb-12 reveal-on-scroll">
                 <h2 class="text-5xl md:text-7xl font-display mb-6">Для кого <span class="italic text-emerald-500">AI-Ковчег</span></h2>
                 <div class="w-24 h-px bg-emerald-500/50 mx-auto mb-6"></div>
                 <p class="font-label text-white/40">Технические знания не требуются. Мы учим мышлению.</p>
@@ -640,9 +708,9 @@
     </section>
 
     <!-- 6. MECHANISM / COMPARISON -->
-    <section id="comparison-section" class="py-32 px-6">
+    <section id="comparison-section" class="py-16 px-6">
         <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col lg:flex-row gap-20 items-end mb-24 reveal-on-scroll">
+            <div class="flex flex-col lg:flex-row gap-20 items-end mb-12 reveal-on-scroll">
                 <h2 class="text-5xl md:text-8xl font-display flex-grow">
                     Это не обучение. Это <span class="italic text-emerald-500">трансформация</span>.
                 </h2>
@@ -688,9 +756,9 @@
     </section>
 
     <!-- 7. PROGRAM (8 Modules Detailed) -->
-    <section id="program" class="py-32 px-6 bg-white/[0.01]">
+    <section id="program" class="py-16 px-6 bg-white/[0.01]">
         <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-24 reveal-on-scroll">
+            <div class="text-center mb-12 reveal-on-scroll">
                 <span class="font-label text-emerald-500 block mb-6">МАРШРУТ ЭКСПЕДИЦИИ</span>
                 <h2 class="text-5xl md:text-8xl font-display mb-6">
                     8 модулей — 8 <span class="italic text-emerald-500">недель</span>
@@ -1028,9 +1096,9 @@
     </section>
 
     <!-- 8. WEEKLY CYCLE -->
-    <section id="weekly-section" class="py-32 px-6">
+    <section id="weekly-section" class="py-16 px-6">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-32 reveal-on-scroll">
+            <div class="text-center mb-12 reveal-on-scroll">
                 <h2 class="text-5xl md:text-8xl font-display mb-12">Ритм <span class="italic text-emerald-500">экспедиции</span></h2>
             </div>
             
@@ -1082,9 +1150,9 @@
     </section>
 
     <!-- 9. SPEAKERS -->
-    <section id="speakers" class="py-32 bg-white/[0.01]">
+    <section id="speakers" class="py-16 bg-white/[0.01]">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-24 reveal-on-scroll">
+            <div class="text-center mb-12 reveal-on-scroll">
                 <h2 class="text-5xl md:text-8xl font-display mb-8">Ваши <span class="italic text-emerald-500">проводники</span></h2>
             </div>
             <div class="grid md:grid-cols-3 gap-12">
@@ -1134,11 +1202,11 @@
     </section>
 
     <!-- 10. SOCIAL PROOF (Masonry Placeholder) -->
-    <section class="py-32 px-6">
+    <section class="py-16 px-6">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-24 reveal-on-scroll">
-                <div class="font-display text-[12rem] md:text-[16rem] text-white/5 font-bold leading-none select-none">150+</div>
-                <div class="font-label text-emerald-500 -mt-10 tracking-[0.5em]">УЧАСТНИКОВ НА БОРТУ</div>
+            <div class="text-center mb-12 reveal-on-scroll">
+                <h2 class="text-5xl md:text-7xl font-display mb-4">Что говорят <span class="italic text-emerald-500">участники</span></h2>
+                <div class="font-label text-emerald-500 tracking-[0.5em]">150+ УЧАСТНИКОВ НА БОРТУ</div>
             </div>
             
             <div class="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6 reveal-on-scroll">
@@ -1183,7 +1251,7 @@
     </section>
 
     <!-- 11. VALUE STACK -->
-    <section class="py-32 px-6">
+    <section class="py-16 px-6">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-20 reveal-on-scroll">
                 <h2 class="text-5xl md:text-8xl font-display">Что на <span class="italic text-emerald-500">борту</span></h2>
@@ -1233,9 +1301,9 @@
     </section>
 
     <!-- 12. PRICING -->
-    <section id="pricing" class="py-32 px-6 bg-white/[0.01]">
+    <section id="pricing" class="py-16 px-6 bg-white/[0.01]">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-24 reveal-on-scroll">
+            <div class="text-center mb-12 reveal-on-scroll">
                 <h2 class="text-5xl md:text-8xl font-display mb-8">Билеты на <span class="italic text-emerald-500">Ковчег</span></h2>
                 <div class="inline-flex items-center gap-3 px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                     <iconify-icon icon="lucide:gift" class="text-emerald-500"></iconify-icon>
@@ -1310,7 +1378,7 @@
     </section>
 
     <!-- 13. GUARANTEE (Boarding Pass) -->
-    <section class="py-32 px-6">
+    <section class="py-16 px-6">
         <div class="max-w-5xl mx-auto">
             <div class="bg-[#0A1628] rounded-[4rem] overflow-hidden border border-emerald-500/20 shadow-2xl relative boarding-pass-mask reveal-on-scroll">
                 <div class="flex flex-col md:flex-row">
@@ -1347,8 +1415,8 @@
     </section>
 
     <!-- 14. FAQ -->
-    <section id="faq" class="py-32 px-6 max-w-4xl mx-auto">
-        <div class="text-center mb-24 reveal-on-scroll">
+    <section id="faq" class="py-16 px-6 max-w-4xl mx-auto">
+        <div class="text-center mb-12 reveal-on-scroll">
             <h2 class="text-5xl md:text-8xl font-display">Частые <span class="italic text-emerald-500">вопросы</span></h2>
         </div>
         <div class="space-y-4 reveal-on-scroll">
@@ -1476,7 +1544,7 @@
     </section>
 
     <!-- 15. FINAL CTA -->
-    <section class="py-32 px-6 overflow-hidden">
+    <section class="py-16 px-6 overflow-hidden">
         <div class="max-w-7xl mx-auto">
             <div class="glass-card rounded-[3rem] p-10 md:p-20 text-center relative overflow-hidden reveal-on-scroll">
                 <div class="absolute inset-0 bg-white/[0.01] pointer-events-none"></div>
@@ -1763,7 +1831,8 @@
             });
         });
 
-        // === SPOTLIGHT MOUSE TRACKING + 3D TILT ===
+        // === SPOTLIGHT MOUSE TRACKING + 3D TILT (desktop only) ===
+        if (!/Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent))
         document.querySelectorAll('.spotlight-card').forEach(card => {
             card.addEventListener('mousemove', e => {
                 const rect = card.getBoundingClientRect();
@@ -1838,108 +1907,119 @@
         gsap.to('#scroll-dot', { y: 8, duration: 1, repeat: -1, yoyo: true, ease: 'power1.inOut' });
 
         // =============================================
-        // === APPLE-STYLE SCROLL-DRIVEN VIDEO ===
+        // === MOBILE DETECTION ===
         // =============================================
-        // Strategy: video autoplays normally (never black), then once
-        // the user starts scrolling, we take over with scroll control.
-        const heroVideo = document.getElementById('hero-video-bg');
-        let scrollVideoReady = false;
+        const isMobile = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth < 768;
 
-        function initScrollVideo() {
-            if (scrollVideoReady) return;
-            const dur = heroVideo.duration;
-            if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
-
-            scrollVideoReady = true;
-            // Now pause — scroll takes over
-            heroVideo.pause();
-
-            console.log('[AI-Kovcheg] Scroll video active — duration:', dur.toFixed(2) + 's');
-
-            const heroScrollTL = gsap.timeline({
-                scrollTrigger: {
-                    trigger: '#hero-section',
-                    start: 'top top',
-                    end: '+=250%',
-                    pin: true,
-                    pinSpacing: true,
-                    scrub: 0.3,
-                    anticipatePin: 1,
-                    onEnterBack: () => { heroVideo.pause(); },
-                    onLeaveBack: () => {
-                        // User scrolled back to top — let video autoplay again
-                        heroVideo.currentTime = 0;
-                        heroVideo.play();
-                    }
-                }
+        // =============================================
+        // === BURGER MENU ===
+        // =============================================
+        const burgerBtn = document.getElementById('burger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (burgerBtn && mobileMenu) {
+            burgerBtn.addEventListener('click', () => {
+                burgerBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('open');
+                document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
             });
-
-            // Scroll-driven video playback (0→100%)
-            const vObj = { t: 0 };
-            heroScrollTL.to(vObj, {
-                t: dur, ease: 'none', duration: 1,
-                onUpdate: () => { heroVideo.currentTime = vObj.t; }
-            }, 0);
-
-            // Fade out hero text (15%→40%)
-            heroScrollTL.to('#hero-section .space-y-10', {
-                y: -120, opacity: 0, ease: 'power2.in', duration: 0.25
-            }, 0.15);
-
-            // Slide out right UI cards (20%→45%)
-            heroScrollTL.to('.hero-scale-in', {
-                x: 120, opacity: 0, ease: 'power2.in', duration: 0.25
-            }, 0.2);
-
-            // Hide scroll indicator
-            heroScrollTL.to('#scroll-down-indicator', {
-                opacity: 0, y: -20, duration: 0.1
-            }, 0.05);
-
-            // Lightning fades (45%→70%)
-            heroScrollTL.to('#lightning-canvas', {
-                opacity: 0, duration: 0.25
-            }, 0.45);
-
-            // Cinematic zoom on video (50%→85%)
-            heroScrollTL.to('#hero-video-bg', {
-                scale: 1.15, ease: 'none', duration: 0.35
-            }, 0.5);
-
-            // Fade out video + scale-down hero (80%→100%)
-            heroScrollTL.to('#hero-video-wrapper', {
-                opacity: 0, duration: 0.2
-            }, 0.8);
-            heroScrollTL.to('#hero-section', {
-                scale: 0.95, borderRadius: '30px', ease: 'power2.inOut', duration: 0.2
-            }, 0.8);
-
-            setTimeout(() => ScrollTrigger.refresh(), 200);
+            mobileMenu.querySelectorAll('.mobile-menu-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    burgerBtn.classList.remove('active');
+                    mobileMenu.classList.remove('open');
+                    document.body.style.overflow = '';
+                });
+            });
         }
 
-        // Wait for first scroll to take over (video autoplays until then)
-        let firstScrollDone = false;
-        function onFirstScroll() {
-            if (firstScrollDone) return;
-            if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
-                firstScrollDone = true;
-                window.removeEventListener('scroll', onFirstScroll);
-                initScrollVideo();
+        // =============================================
+        // === SCROLL-DRIVEN VIDEO (desktop) / AUTOPLAY PARALLAX (mobile) ===
+        // =============================================
+        if (isMobile) {
+            // MOBILE: video autoplays, simple parallax on scroll (no pin, no seeking)
+            gsap.to('#hero-video-wrapper', {
+                opacity: 0, ease: 'none',
+                scrollTrigger: { trigger: '#hero-section', start: '40% top', end: '100% top', scrub: 1 }
+            });
+            gsap.to('#hero-section .space-y-10', {
+                y: -80, opacity: 0, ease: 'none',
+                scrollTrigger: { trigger: '#hero-section', start: '10% top', end: '50% top', scrub: 1 }
+            });
+            gsap.to('#scroll-down-indicator', {
+                opacity: 0, y: -20,
+                scrollTrigger: { trigger: '#hero-section', start: '5% top', end: '15% top', scrub: true }
+            });
+        } else {
+            // DESKTOP: scroll-driven video scrub
+            const heroVideo = document.getElementById('hero-video-bg');
+
+            function initScrollVideo() {
+                if (scrollVideoReady) return;
+                const dur = heroVideo.duration;
+                if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
+
+                scrollVideoReady = true;
+                heroVideo.pause();
+
+                const heroScrollTL = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: '#hero-section',
+                        start: 'top top',
+                        end: '+=120%',
+                        pin: true,
+                        pinSpacing: true,
+                        scrub: 0.5,
+                        anticipatePin: 1,
+                    }
+                });
+
+                heroScrollTL.to({ t: 0 }, {
+                    t: dur, ease: 'none', duration: 1,
+                    onUpdate: function() { heroVideo.currentTime = this.targets()[0].t; }
+                }, 0);
+
+                heroScrollTL.to('#hero-section .space-y-10', {
+                    y: -100, opacity: 0, ease: 'power2.in', duration: 0.3
+                }, 0.2);
+
+                heroScrollTL.to('.hero-scale-in', {
+                    x: 100, opacity: 0, ease: 'power2.in', duration: 0.3
+                }, 0.25);
+
+                heroScrollTL.to('#scroll-down-indicator', {
+                    opacity: 0, y: -20, duration: 0.1
+                }, 0.05);
+
+                heroScrollTL.to('#hero-video-wrapper', {
+                    opacity: 0, duration: 0.2
+                }, 0.8);
+
+                heroScrollTL.to('#hero-section', {
+                    scale: 0.95, borderRadius: '30px', ease: 'power2.inOut', duration: 0.2
+                }, 0.8);
+
+                setTimeout(() => ScrollTrigger.refresh(), 100);
             }
-        }
-        window.addEventListener('scroll', onFirstScroll, { passive: true });
 
-        // Also try init after load in case user hasn't scrolled yet
-        heroVideo.addEventListener('canplay', () => {
-            // Don't auto-init — wait for scroll
-        });
-        // But if page loads already scrolled (e.g. refresh mid-page)
-        if (window.scrollY > 10) {
+            // Try immediately, then on scroll, then on canplay
             if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
                 initScrollVideo();
             } else {
                 heroVideo.addEventListener('canplay', () => initScrollVideo(), { once: true });
+                window.addEventListener('scroll', function onScroll() {
+                    if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
+                        window.removeEventListener('scroll', onScroll);
+                        initScrollVideo();
+                    }
+                }, { passive: true });
             }
+        }
+
+        // =============================================
+        // === DISABLE HEAVY EFFECTS ON MOBILE ===
+        // =============================================
+        if (isMobile) {
+            const lCanvas = document.getElementById('lightning-canvas');
+            if (lCanvas) lCanvas.style.display = 'none';
         }
 
         // =============================================
@@ -1985,7 +2065,7 @@
         // === FOR WHOM — SCRUB scale from center ===
         // =============================================
         (function() {
-            const sections = document.querySelectorAll('.py-32.bg-white\\/\\[0\\.01\\]');
+            const sections = document.querySelectorAll('.py-16.bg-white\\/\\[0\\.01\\]');
             const forWhomSection = sections[0]; // first one is "for whom"
             if (forWhomSection) {
                 const fwH2 = forWhomSection.querySelector('h2');
@@ -2250,19 +2330,21 @@
         });
 
         // =============================================
-        // === MAGNETIC BUTTONS ===
+        // === MAGNETIC BUTTONS (desktop only) ===
         // =============================================
-        document.querySelectorAll('.emerald-pulse, a.bg-white[href="#pricing"]').forEach(btn => {
-            btn.addEventListener('mousemove', (e) => {
-                const rect = btn.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                gsap.to(btn, { x: x * 0.3, y: y * 0.3, scale: 1.05, duration: 0.3, ease: 'power2.out' });
+        if (!isMobile) {
+            document.querySelectorAll('.emerald-pulse, a.bg-white[href="#pricing"]').forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    gsap.to(btn, { x: x * 0.3, y: y * 0.3, scale: 1.05, duration: 0.3, ease: 'power2.out' });
+                });
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, { x: 0, y: 0, scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
+                });
             });
-            btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, { x: 0, y: 0, scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
-            });
-        });
+        }
 
         // =============================================
         // === REVEAL ON SCROLL (fallback) ===
