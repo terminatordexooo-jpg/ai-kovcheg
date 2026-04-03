@@ -499,8 +499,8 @@
     <!-- 2. HERO -->
     <section id="hero-section" class="hero-section h-screen min-h-[600px] flex items-center pt-20 pb-10 px-4 md:px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
-        <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0; background: url('hero_source.jpg') center/cover no-repeat;">
-            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;" poster="hero_source.jpg">
+        <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0; background: #050505;">
+            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
                 <source src="hero_bg_new.mp4" type="video/mp4">
                 <source src="hero_scroll.mp4" type="video/mp4">
             </video>
@@ -1951,6 +1951,7 @@
         } else {
             // DESKTOP: scroll-driven video scrub
             const heroVideo = document.getElementById('hero-video-bg');
+            let scrollVideoReady = false;
 
             function initScrollVideo() {
                 if (scrollVideoReady) return;
@@ -1958,6 +1959,10 @@
                 if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
 
                 scrollVideoReady = true;
+
+                // Stop autoplay/loop fighting scroll-scrub
+                heroVideo.removeAttribute('autoplay');
+                heroVideo.removeAttribute('loop');
                 heroVideo.pause();
 
                 const heroScrollTL = gsap.timeline({
@@ -1967,14 +1972,15 @@
                         end: '+=120%',
                         pin: true,
                         pinSpacing: true,
-                        scrub: 0.5,
+                        scrub: 1,
                         anticipatePin: 1,
                     }
                 });
 
-                heroScrollTL.to({ t: 0 }, {
+                const vObj = { t: 0 };
+                heroScrollTL.to(vObj, {
                     t: dur, ease: 'none', duration: 1,
-                    onUpdate: function() { heroVideo.currentTime = this.targets()[0].t; }
+                    onUpdate: () => { heroVideo.currentTime = vObj.t; }
                 }, 0);
 
                 heroScrollTL.to('#hero-section .space-y-10', {
@@ -2000,13 +2006,17 @@
                 setTimeout(() => ScrollTrigger.refresh(), 100);
             }
 
-            // Try immediately, then on scroll, then on canplay
-            if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
+            // loadedmetadata fires earliest and reliably gives duration
+            heroVideo.addEventListener('loadedmetadata', () => initScrollVideo(), { once: true });
+            heroVideo.addEventListener('canplay', () => initScrollVideo(), { once: true });
+
+            // Try immediately if already loaded
+            if (heroVideo.readyState >= 1 && heroVideo.duration > 0) {
                 initScrollVideo();
             } else {
-                heroVideo.addEventListener('canplay', () => initScrollVideo(), { once: true });
+                // Fallback: init on first scroll if video still not ready
                 window.addEventListener('scroll', function onScroll() {
-                    if (heroVideo.readyState >= 2 && heroVideo.duration > 0) {
+                    if (heroVideo.duration > 0) {
                         window.removeEventListener('scroll', onScroll);
                         initScrollVideo();
                     }
