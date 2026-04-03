@@ -501,7 +501,7 @@
         <!-- Video Background — FULL SCREEN -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0; background: #050505;">
             <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
-                <source src="hero_new_compressed.mp4" type="video/mp4">
+                <source src="hero_4k.mp4" type="video/mp4">
             </video>
             <!-- Dark overlay so text is readable -->
             <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/50 via-[#050505]/30 to-[#050505]/90"></div>
@@ -1948,79 +1948,42 @@
                 scrollTrigger: { trigger: '#hero-section', start: '5% top', end: '15% top', scrub: true }
             });
         } else {
-            // DESKTOP: scroll-driven video scrub
-            const heroVideo = document.getElementById('hero-video-bg');
-            let scrollVideoReady = false;
+            // DESKTOP: autoplay video with smooth scroll fade (no scrubbing = no lag)
+            const heroScrollTL = gsap.timeline({
+                scrollTrigger: {
+                    trigger: '#hero-section',
+                    start: 'top top',
+                    end: '+=100%',
+                    pin: true,
+                    pinSpacing: true,
+                    scrub: 1,
+                    anticipatePin: 1,
+                }
+            });
 
-            function initScrollVideo() {
-                if (scrollVideoReady) return;
-                const dur = heroVideo.duration;
-                if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
+            heroScrollTL.to('#hero-section .space-y-10', {
+                y: -100, opacity: 0, ease: 'power2.in', duration: 0.3
+            }, 0.1);
 
-                scrollVideoReady = true;
+            heroScrollTL.to('.hero-scale-in', {
+                x: 100, opacity: 0, ease: 'power2.in', duration: 0.3
+            }, 0.15);
 
-                // Stop autoplay/loop fighting scroll-scrub
-                heroVideo.removeAttribute('autoplay');
-                heroVideo.removeAttribute('loop');
-                heroVideo.pause();
+            heroScrollTL.to('#scroll-down-indicator', {
+                opacity: 0, y: -20, duration: 0.1
+            }, 0.0);
 
-                const heroScrollTL = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: '#hero-section',
-                        start: 'top top',
-                        end: '+=120%',
-                        pin: true,
-                        pinSpacing: true,
-                        scrub: 1,
-                        anticipatePin: 1,
-                    }
-                });
+            heroScrollTL.to('#hero-video-bg', {
+                scale: 1.08, ease: 'none', duration: 0.8
+            }, 0);
 
-                const vObj = { t: 0 };
-                heroScrollTL.to(vObj, {
-                    t: dur, ease: 'none', duration: 1,
-                    onUpdate: () => { heroVideo.currentTime = vObj.t; }
-                }, 0);
+            heroScrollTL.to('#hero-video-wrapper', {
+                opacity: 0, duration: 0.25
+            }, 0.75);
 
-                heroScrollTL.to('#hero-section .space-y-10', {
-                    y: -100, opacity: 0, ease: 'power2.in', duration: 0.3
-                }, 0.2);
-
-                heroScrollTL.to('.hero-scale-in', {
-                    x: 100, opacity: 0, ease: 'power2.in', duration: 0.3
-                }, 0.25);
-
-                heroScrollTL.to('#scroll-down-indicator', {
-                    opacity: 0, y: -20, duration: 0.1
-                }, 0.05);
-
-                heroScrollTL.to('#hero-video-wrapper', {
-                    opacity: 0, duration: 0.2
-                }, 0.8);
-
-                heroScrollTL.to('#hero-section', {
-                    scale: 0.95, borderRadius: '30px', ease: 'power2.inOut', duration: 0.2
-                }, 0.8);
-
-                setTimeout(() => ScrollTrigger.refresh(), 100);
-            }
-
-            // loadedmetadata fires earliest and reliably gives duration
-            heroVideo.addEventListener('loadedmetadata', () => initScrollVideo(), { once: true });
-            heroVideo.addEventListener('canplay', () => initScrollVideo(), { once: true });
-
-            // Try immediately if already loaded
-            if (heroVideo.readyState >= 1 && heroVideo.duration > 0) {
-                initScrollVideo();
-            } else {
-                // Fallback: init on first scroll if video still not ready
-                window.addEventListener('scroll', function onScroll() {
-                    if (heroVideo.duration > 0) {
-                        window.removeEventListener('scroll', onScroll);
-                        initScrollVideo();
-                    }
-                }, { passive: true });
-            }
+            heroScrollTL.to('#hero-section', {
+                scale: 0.95, borderRadius: '30px', ease: 'power2.inOut', duration: 0.2
+            }, 0.8);
         }
 
         // =============================================
