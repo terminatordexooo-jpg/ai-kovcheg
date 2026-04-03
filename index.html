@@ -1948,7 +1948,7 @@
                 scrollTrigger: { trigger: '#hero-section', start: '5% top', end: '15% top', scrub: true }
             });
         } else {
-            // DESKTOP: scroll-driven video scrub (all-keyframe encode = no lag)
+            // DESKTOP: scroll-driven video scrub (all-keyframe encode = instant seek)
             const heroVideo = document.getElementById('hero-video-bg');
             let scrollVideoReady = false;
 
@@ -1961,6 +1961,7 @@
                 heroVideo.removeAttribute('autoplay');
                 heroVideo.removeAttribute('loop');
                 heroVideo.pause();
+                heroVideo.currentTime = 0;
 
                 const heroScrollTL = gsap.timeline({
                     scrollTrigger: {
@@ -1969,7 +1970,7 @@
                         end: '+=150%',
                         pin: true,
                         pinSpacing: true,
-                        scrub: 2,
+                        scrub: 0.5,
                         anticipatePin: 1,
                     }
                 });
@@ -2003,11 +2004,20 @@
                 setTimeout(() => ScrollTrigger.refresh(), 100);
             }
 
-            heroVideo.addEventListener('loadedmetadata', () => initScrollVideo(), { once: true });
-            heroVideo.addEventListener('canplay', () => initScrollVideo(), { once: true });
+            // Try immediately
             if (heroVideo.readyState >= 1 && heroVideo.duration > 0) {
                 initScrollVideo();
             }
+            // Events
+            heroVideo.addEventListener('loadedmetadata', () => initScrollVideo(), { once: true });
+            heroVideo.addEventListener('canplaythrough', () => initScrollVideo(), { once: true });
+            // Scroll fallback — if video loads after page interaction
+            window.addEventListener('scroll', function onScrollFallback() {
+                if (heroVideo.duration > 0) {
+                    window.removeEventListener('scroll', onScrollFallback);
+                    initScrollVideo();
+                }
+            }, { passive: true });
         }
 
         // =============================================
