@@ -159,18 +159,7 @@
             transform: translateY(0);
         }
 
-        /* Stagger children animation */
-        .stagger-children > * {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .stagger-children.active > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
-        .stagger-children.active > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 80ms; }
-        .stagger-children.active > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 160ms; }
-        .stagger-children.active > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 240ms; }
-        .stagger-children.active > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 320ms; }
-        .stagger-children.active > *:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 400ms; }
+        /* Stagger children animation — handled by GSAP, not CSS opacity */
 
         /* Float animation for project cards */
         @keyframes float {
@@ -2175,18 +2164,38 @@
                 heroVideo.pause();
                 heroVideo.currentTime = 0;
 
-                // Video scrub only — no hero fade-outs
-                const vObj = { t: 0 };
-                gsap.to(vObj, {
-                    t: dur, ease: 'none',
+                const heroScrollTL = gsap.timeline({
                     scrollTrigger: {
                         trigger: '#hero-section',
                         start: 'top top',
-                        end: '+=60%',
-                        scrub: 1,
-                    },
-                    onUpdate: () => { heroVideo.currentTime = vObj.t; }
+                        end: '+=40%',
+                        pin: true,
+                        pinSpacing: true,
+                        scrub: 0.8,
+                        anticipatePin: 1,
+                    }
                 });
+
+                // Video scrub
+                const vObj = { t: 0 };
+                heroScrollTL.to(vObj, {
+                    t: dur * 0.4, ease: 'none', duration: 1,
+                    onUpdate: () => { heroVideo.currentTime = vObj.t; }
+                }, 0);
+
+                // Content flies out
+                heroScrollTL.to('#hero-section .space-y-10', {
+                    y: -70, opacity: 0, ease: 'power2.in', duration: 0.5
+                }, 0);
+                heroScrollTL.to('.hero-scale-in', {
+                    x: 70, opacity: 0, ease: 'power2.in', duration: 0.5
+                }, 0.05);
+                heroScrollTL.to('#scroll-down-indicator', { opacity: 0, duration: 0.1 }, 0);
+
+                // Hero section itself fades → next section visible underneath
+                heroScrollTL.to('#hero-section', {
+                    opacity: 0, duration: 0.4, ease: 'power2.in'
+                }, 0.55);
 
                 setTimeout(() => ScrollTrigger.refresh(), 100);
             }
