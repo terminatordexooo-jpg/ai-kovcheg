@@ -574,9 +574,8 @@
     <section id="hero-section" class="hero-section h-screen min-h-[600px] flex items-center pt-20 pb-10 px-4 md:px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0; background: #050505;">
-            <video id="hero-video-bg" autoplay muted loop playsinline preload="metadata" poster="hero_source.jpg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
+            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
                 <source src="hero_new_compressed.mp4" type="video/mp4">
-                <source src="hero_scroll_optimized.mp4" type="video/mp4">
             </video>
             <!-- Dark overlay so text is readable -->
             <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/50 via-[#050505]/30 to-[#050505]/90"></div>
@@ -2663,39 +2662,23 @@
                 setTimeout(() => { preloader.remove(); }, 1400);
             }
 
-            // Show logo immediately
+            // Show logo
             setTimeout(() => {
                 preLogo.style.opacity = '1';
                 preLogo.style.transform = 'translateY(0)';
                 preLabel.style.opacity = '1';
             }, 80);
 
-            // Animate bar to ~85% over 2.5s (looks like loading)
-            setTimeout(() => { preBar.style.width = '85%'; }, 150);
+            // Fill bar
+            setTimeout(() => { preBar.style.width = '100%'; }, 150);
 
-            // Minimum display time: 2.5s
+            // Exit after 1.5s — fast, no waiting
+            videoReady = true;
+            minTimeDone = false;
             setTimeout(() => {
                 minTimeDone = true;
                 dismiss();
-            }, 2500);
-
-            // Wait for video buffered enough to play smoothly
-            function onVideoReady() {
-                videoReady = true;
-                dismiss();
-            }
-
-            if (vid) {
-                if (vid.readyState >= 4) {
-                    onVideoReady();
-                } else {
-                    vid.addEventListener('canplaythrough', onVideoReady, { once: true });
-                    // Safety: max wait 5s even if video never fires
-                    setTimeout(onVideoReady, 5000);
-                }
-            } else {
-                videoReady = true;
-            }
+            }, 1500);
         })();
 
         // === REVEAL ON SCROLL (fallback) ===
