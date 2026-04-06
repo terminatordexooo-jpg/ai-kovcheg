@@ -2175,8 +2175,37 @@
         // =============================================
         // === SCROLL-DRIVEN VIDEO (desktop) / AUTOPLAY PARALLAX (mobile) ===
         // =============================================
+        // =============================================
+        // === HERO SCROLL PIN — runs immediately, no video dependency ===
+        // =============================================
+        const heroScrollTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '#hero-section',
+                start: 'top top',
+                end: '+=50%',
+                pin: true,
+                pinSpacing: true,
+                scrub: 0.8,
+                anticipatePin: 1,
+            }
+        });
+
+        // Left content flies up+out
+        heroScrollTL.to('#hero-section .space-y-10', {
+            y: -80, opacity: 0, ease: 'power2.in', duration: 0.5
+        }, 0);
+        // Right mockup flies right+out
+        heroScrollTL.to('.hero-scale-in', {
+            x: 80, opacity: 0, ease: 'power2.in', duration: 0.5
+        }, 0.05);
+        heroScrollTL.to('#scroll-down-indicator', { opacity: 0, duration: 0.1 }, 0);
+        // Whole section fades → reveals next section under
+        heroScrollTL.to('#hero-section', {
+            opacity: 0, duration: 0.35, ease: 'power2.in'
+        }, 0.6);
+
+        // Video scrub (only if video loads — doesn't block above)
         if (!isMobile) {
-            // DESKTOP: scroll-driven video scrub (all-keyframe encode = instant seek)
             const heroVideo = document.getElementById('hero-video-bg');
             let scrollVideoReady = false;
 
@@ -2184,63 +2213,22 @@
                 if (scrollVideoReady) return;
                 const dur = heroVideo.duration;
                 if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
-
                 scrollVideoReady = true;
                 heroVideo.removeAttribute('autoplay');
                 heroVideo.removeAttribute('loop');
                 heroVideo.pause();
                 heroVideo.currentTime = 0;
-
-                const heroScrollTL = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: '#hero-section',
-                        start: 'top top',
-                        end: '+=40%',
-                        pin: true,
-                        pinSpacing: true,
-                        scrub: 0.8,
-                        anticipatePin: 1,
-                    }
-                });
-
-                // Video scrub
                 const vObj = { t: 0 };
                 heroScrollTL.to(vObj, {
                     t: dur * 0.4, ease: 'none', duration: 1,
                     onUpdate: () => { heroVideo.currentTime = vObj.t; }
                 }, 0);
-
-                // Content flies out
-                heroScrollTL.to('#hero-section .space-y-10', {
-                    y: -70, opacity: 0, ease: 'power2.in', duration: 0.5
-                }, 0);
-                heroScrollTL.to('.hero-scale-in', {
-                    x: 70, opacity: 0, ease: 'power2.in', duration: 0.5
-                }, 0.05);
-                heroScrollTL.to('#scroll-down-indicator', { opacity: 0, duration: 0.1 }, 0);
-
-                // Hero section itself fades → next section visible underneath
-                heroScrollTL.to('#hero-section', {
-                    opacity: 0, duration: 0.4, ease: 'power2.in'
-                }, 0.55);
-
                 setTimeout(() => ScrollTrigger.refresh(), 100);
             }
 
-            // Try immediately
-            if (heroVideo.readyState >= 1 && heroVideo.duration > 0) {
-                initScrollVideo();
-            }
-            // Events
+            if (heroVideo.readyState >= 1 && heroVideo.duration > 0) initScrollVideo();
             heroVideo.addEventListener('loadedmetadata', () => initScrollVideo(), { once: true });
             heroVideo.addEventListener('canplaythrough', () => initScrollVideo(), { once: true });
-            // Scroll fallback — if video loads after page interaction
-            window.addEventListener('scroll', function onScrollFallback() {
-                if (heroVideo.duration > 0) {
-                    window.removeEventListener('scroll', onScrollFallback);
-                    initScrollVideo();
-                }
-            }, { passive: true });
         }
 
         // =============================================
