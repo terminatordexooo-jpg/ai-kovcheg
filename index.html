@@ -149,14 +149,57 @@
         }
 
         .reveal-on-scroll {
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .reveal-on-scroll.active {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Stagger children animation */
+        .stagger-children > * {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .stagger-children.active > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
+        .stagger-children.active > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 80ms; }
+        .stagger-children.active > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 160ms; }
+        .stagger-children.active > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 240ms; }
+        .stagger-children.active > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 320ms; }
+        .stagger-children.active > *:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 400ms; }
+
+        /* Float animation for project cards */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .float-card:hover {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Card glow on hover */
+        .glow-hover {
+            transition: box-shadow 0.4s ease, border-color 0.4s ease, transform 0.3s ease;
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.35) !important;
+            transform: translateY(-4px);
+        }
+
+        /* Scale in for project cards */
+        .scale-reveal {
+            opacity: 0;
+            transform: scale(0.92) translateY(20px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .scale-reveal.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
         }
 
         .gradient-text-shift {
@@ -702,22 +745,22 @@
                 <div class="w-24 h-px bg-emerald-500/50 mx-auto mb-6"></div>
                 <p class="font-label text-white/40">Технические знания не требуются. Мы учим мышлению.</p>
             </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="glass-card p-12 rounded-[2.5rem] text-center reveal-on-scroll group">
+            <div class="grid md:grid-cols-3 gap-8 stagger-children reveal-on-scroll">
+                <div class="glass-card glow-hover p-12 rounded-[2.5rem] text-center group">
                     <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5 group-hover:border-emerald-500/30 transition-all">
                         <iconify-icon icon="lucide:building-2" class="text-emerald-500 text-4xl"></iconify-icon>
                     </div>
                     <h3 class="text-3xl font-display mb-6">Собственник бизнеса</h3>
                     <p class="text-white/40 text-lg leading-relaxed">Желает кратно снизить расходы на ФОТ и автоматизировать 80% рутинных бизнес-процессов.</p>
                 </div>
-                <div class="glass-card p-12 rounded-[2.5rem] text-center reveal-on-scroll group" style="transition-delay: 100ms;">
+                <div class="glass-card glow-hover p-12 rounded-[2.5rem] text-center group">
                     <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5 group-hover:border-emerald-500/30 transition-all">
                         <iconify-icon icon="lucide:rocket" class="text-emerald-500 text-4xl"></iconify-icon>
                     </div>
                     <h3 class="text-3xl font-display mb-6">Эксперт / Фрилансер</h3>
                     <p class="text-white/40 text-lg leading-relaxed">Хочет ускорить свою работу в 5-10 раз, повысить чек и масштабировать личный бренд через контент.</p>
                 </div>
-                <div class="glass-card p-12 rounded-[2.5rem] text-center reveal-on-scroll group" style="transition-delay: 200ms;">
+                <div class="glass-card glow-hover p-12 rounded-[2.5rem] text-center group">
                     <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5 group-hover:border-emerald-500/30 transition-all">
                         <iconify-icon icon="lucide:cpu" class="text-emerald-500 text-4xl"></iconify-icon>
                     </div>
@@ -1228,6 +1271,83 @@
                 <div class="glass-card p-8 rounded-3xl break-inside-avoid">
                     <div class="font-label text-emerald-500 text-[9px] mb-3">КЕЙС · КАЗНА DASHBOARD</div>
                     <p class="text-white/40 leading-relaxed italic">«Финансовый дашборд с диаграммами Sankey и синхронизацией Google Sheets. Собрал за 8 недель.»</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10.5 STUDENT PROJECTS -->
+    <section class="py-16 px-6 bg-white/[0.01]">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12 reveal-on-scroll">
+                <span class="font-label text-emerald-500 block mb-4 tracking-[0.3em]">РЕАЛЬНЫЕ РЕЗУЛЬТАТЫ</span>
+                <h2 class="text-5xl md:text-7xl font-display mb-4">Проекты <span class="italic text-emerald-500">участников</span></h2>
+                <p class="text-white/40 text-lg max-w-xl mx-auto">Реальные продукты, созданные студентами во время обучения. 0 ₽ на рекламу.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children reveal-on-scroll">
+                <!-- Project 1 -->
+                <div class="glass-card glow-hover float-card rounded-3xl p-8 border border-white/[0.08]">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="text-4xl">🧠</div>
+                        <div class="font-label text-emerald-500 text-[9px] px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">НЕЙРОНАУКА</div>
+                    </div>
+                    <h3 class="font-display text-2xl mb-2">Дофаминомика</h3>
+                    <p class="text-white/30 text-xs mb-1">Jedi Monkey</p>
+                    <p class="text-white/50 text-sm leading-relaxed mt-4">Интерактивный симулятор дофамина. С одного поста — <span class="text-emerald-500 font-semibold">2 288 пользователей</span> без рекламы.</p>
+                    <div class="mt-6 pt-6 border-t border-white/5 flex items-center gap-3">
+                        <div class="font-display text-3xl text-emerald-500">2 288</div>
+                        <div class="font-label text-white/20 text-[9px]">ОРГАНИЧЕСКИХ<br>ПОЛЬЗОВАТЕЛЕЙ</div>
+                    </div>
+                </div>
+                <!-- Project 2 -->
+                <div class="glass-card glow-hover float-card rounded-3xl p-8 border border-white/[0.08]" style="transition-delay:80ms">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="text-4xl">⚓</div>
+                        <div class="font-label text-emerald-500 text-[9px] px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">ПСИХОЛОГИЯ</div>
+                    </div>
+                    <h3 class="font-display text-2xl mb-2">Точка Опоры</h3>
+                    <p class="text-white/30 text-xs mb-1">Андрей</p>
+                    <p class="text-white/50 text-sm leading-relaxed mt-4">Антистресс-клуб: AI-калькулятор матрицы, подкасты, медитации. Полноценный продукт за 8 недель.</p>
+                </div>
+                <!-- Project 3 -->
+                <div class="glass-card glow-hover float-card rounded-3xl p-8 border border-white/[0.08]" style="transition-delay:160ms">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="text-4xl">🔮</div>
+                        <div class="font-label text-emerald-500 text-[9px] px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">НУМЕРОЛОГИЯ</div>
+                    </div>
+                    <h3 class="font-display text-2xl mb-2">Прогноз 2026</h3>
+                    <p class="text-white/30 text-xs mb-1">Lilia</p>
+                    <p class="text-white/50 text-sm leading-relaxed mt-4">Персональный прогноз по дате рождения с glassmorphism-дизайном. Вирусный продукт.</p>
+                </div>
+                <!-- Project 4 -->
+                <div class="glass-card glow-hover float-card rounded-3xl p-8 border border-white/[0.08]" style="transition-delay:240ms">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="text-4xl">🥷</div>
+                        <div class="font-label text-emerald-500 text-[9px] px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">ВЕЛНЕС</div>
+                    </div>
+                    <h3 class="font-display text-2xl mb-2">НейроСамурай</h3>
+                    <p class="text-white/30 text-xs mb-1">Виталий</p>
+                    <p class="text-white/50 text-sm leading-relaxed mt-4">21-дневный дофаминовый детокс с геймификацией. От идеи до деплоя за выходные.</p>
+                </div>
+                <!-- Project 5 -->
+                <div class="glass-card glow-hover float-card rounded-3xl p-8 border border-white/[0.08]" style="transition-delay:320ms">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="text-4xl">🛡️</div>
+                        <div class="font-label text-emerald-500 text-[9px] px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">БУХГАЛТЕРИЯ</div>
+                    </div>
+                    <h3 class="font-display text-2xl mb-2">Бронежилет для ФОП</h3>
+                    <p class="text-white/30 text-xs mb-1">Марго</p>
+                    <p class="text-white/50 text-sm leading-relaxed mt-4">Лендинг с калькулятором, отзывами и гарантией. Продающий сайт с нуля за курс.</p>
+                </div>
+                <!-- Project 6 -->
+                <div class="glass-card glow-hover float-card rounded-3xl p-8 border border-white/[0.08] bg-emerald-500/[0.03]" style="transition-delay:400ms">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="text-4xl">📊</div>
+                        <div class="font-label text-emerald-500 text-[9px] px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">ФИНТЕХ</div>
+                    </div>
+                    <h3 class="font-display text-2xl mb-2">Казна Dashboard</h3>
+                    <p class="text-white/30 text-xs mb-1">Влад</p>
+                    <p class="text-white/50 text-sm leading-relaxed mt-4">Финансовый дашборд: Sankey-диаграммы, Google Sheets sync, аналитика. Уровень SaaS-продукта.</p>
                 </div>
             </div>
         </div>
@@ -2448,9 +2568,14 @@
         // === REVEAL ON SCROLL (fallback) ===
         // =============================================
         const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal-on-scroll').forEach(el => revealObserver.observe(el));
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.reveal-on-scroll, .stagger-children, .scale-reveal').forEach(el => revealObserver.observe(el));
 
         // === 27 AI EMPLOYEES FILTER ===
         document.querySelectorAll('.ai-filter-btn').forEach(btn => {
