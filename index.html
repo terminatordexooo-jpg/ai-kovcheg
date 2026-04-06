@@ -2224,9 +2224,8 @@
             requestAnimationFrame(loop);
         };
 
-        // Hero scroll scrub — canvas frame scrubbing (Apple-style, zero seek lag)
+        // Hero scroll scrub — canvas frame scrubbing (Apple-style, all devices)
         window._initHeroScrub = function() {
-            if (isMobile) { window._initMobileHero(); return; }
             const canvas = document.getElementById('hero-canvas');
             if (!canvas || !window._heroFrames || !window._heroFrames.length) return;
 
@@ -2254,12 +2253,10 @@
                 const cw = canvas.width, ch = canvas.height;
                 const iw = img.naturalWidth, ih = img.naturalHeight;
                 const scale = Math.max(cw / iw, ch / ih);
-                const dx = (cw - iw * scale) / 2;
-                const dy = (ch - ih * scale) / 2;
                 ctx.clearRect(0, 0, cw, ch);
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(img, dx, dy, iw * scale, ih * scale);
+                ctx.drawImage(img, (cw - iw * scale) / 2, (ch - ih * scale) / 2, iw * scale, ih * scale);
             }
 
             resizeCanvas();
@@ -2267,14 +2264,15 @@
 
             const v = { progress: 0 };
             const heroEl = document.getElementById('hero-section');
+            const scrollDist = isMobile ? '+=150%' : '+=220%';
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: '#hero-section',
                     start: 'top top',
-                    end: '+=220%',
+                    end: scrollDist,
                     pin: true,
                     pinSpacing: true,
-                    scrub: 0.5,
+                    scrub: isMobile ? 0.3 : 0.5,
                     anticipatePin: 1,
                     onLeave: () => { if (heroEl) heroEl.style.visibility = 'hidden'; },
                     onEnterBack: () => { if (heroEl) heroEl.style.visibility = 'visible'; },
