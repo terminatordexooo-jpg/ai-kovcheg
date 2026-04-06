@@ -2650,33 +2650,28 @@
             const preLabel = document.getElementById('pre-label');
             if (!preloader) return;
 
-            // Lock scroll during load
-            document.body.style.overflow = 'hidden';
+            // DO NOT lock scroll — ScrollTrigger needs to measure freely
 
-            // Step 1: show logo
+            // Step 1: show logo + label
             setTimeout(() => {
                 preLogo.style.opacity = '1';
                 preLogo.style.transform = 'translateY(0)';
                 preLabel.style.opacity = '1';
-            }, 100);
+            }, 80);
 
-            // Step 2: fill bar
-            setTimeout(() => {
-                preBar.style.width = '100%';
-            }, 200);
+            // Step 2: fill progress bar
+            setTimeout(() => { preBar.style.width = '100%'; }, 150);
 
-            // Step 3: slide preloader UP and reveal site
+            // Step 3: slide preloader UP — scroll animation starts working
             setTimeout(() => {
-                preloader.style.transition = 'transform 0.9s cubic-bezier(0.76,0,0.24,1)';
+                preloader.style.transition = 'transform 0.85s cubic-bezier(0.76,0,0.24,1)';
                 preloader.style.transform = 'translateY(-100%)';
-                document.body.style.overflow = '';
-            }, 1800);
-
-            // Step 4: remove preloader from DOM
-            setTimeout(() => {
-                preloader.remove();
+                // Refresh ScrollTrigger so pin recalculates with correct layout
                 ScrollTrigger.refresh();
-            }, 2800);
+            }, 1700);
+
+            // Step 4: remove from DOM
+            setTimeout(() => { preloader.remove(); }, 2600);
         })();
 
         // === REVEAL ON SCROLL (fallback) ===
