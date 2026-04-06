@@ -511,6 +511,21 @@
     </style>
 </head>
 <body class="bg-[#050505]">
+
+    <!-- PRELOADER -->
+    <div id="preloader" style="position:fixed;inset:0;z-index:99999;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div id="pre-logo" style="display:flex;align-items:center;gap:14px;margin-bottom:48px;opacity:0;transform:translateY(24px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1);">
+            <div style="width:48px;height:48px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(16,185,129,0.3);">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 7v5c0 5.25 3.4 10.15 8 11.35C16.6 22.15 20 17.25 20 12V7L12 2z" fill="#050505"/></svg>
+            </div>
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;letter-spacing:0.12em;color:#fff;">AI-КОВЧЕГ</span>
+        </div>
+        <div style="width:220px;height:1px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;position:relative;">
+            <div id="pre-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#10B981,#34D399);border-radius:99px;transition:width 1.4s cubic-bezier(0.16,1,0.3,1);box-shadow:0 0 10px rgba(16,185,129,0.7);"></div>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:9px;letter-spacing:0.35em;color:rgba(255,255,255,0.2);margin-top:14px;opacity:0;transition:opacity 0.5s ease 0.4s;" id="pre-label">ЗАГРУЗКА...</div>
+    </div>
+
     <div id="scroll-progress" style="width: 0%"></div>
     <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <div class="absolute top-[10%] -left-[10%] w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] morph-blob"></div>
@@ -2204,31 +2219,10 @@
             opacity: 0, duration: 0.35, ease: 'power2.in'
         }, 0.6);
 
-        // Video scrub (only if video loads — doesn't block above)
-        if (!isMobile) {
-            const heroVideo = document.getElementById('hero-video-bg');
-            let scrollVideoReady = false;
-
-            function initScrollVideo() {
-                if (scrollVideoReady) return;
-                const dur = heroVideo.duration;
-                if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
-                scrollVideoReady = true;
-                heroVideo.removeAttribute('autoplay');
-                heroVideo.removeAttribute('loop');
-                heroVideo.pause();
-                heroVideo.currentTime = 0;
-                const vObj = { t: 0 };
-                heroScrollTL.to(vObj, {
-                    t: dur * 0.4, ease: 'none', duration: 1,
-                    onUpdate: () => { heroVideo.currentTime = vObj.t; }
-                }, 0);
-                setTimeout(() => ScrollTrigger.refresh(), 100);
-            }
-
-            if (heroVideo.readyState >= 1 && heroVideo.duration > 0) initScrollVideo();
-            heroVideo.addEventListener('loadedmetadata', () => initScrollVideo(), { once: true });
-            heroVideo.addEventListener('canplaythrough', () => initScrollVideo(), { once: true });
+        // Video just autoplays — no scrub needed
+        const heroVideo = document.getElementById('hero-video-bg');
+        if (heroVideo) {
+            heroVideo.play().catch(() => {});
         }
 
         // =============================================
@@ -2646,6 +2640,45 @@
         }
 
         // =============================================
+        // =============================================
+        // === PRELOADER ===
+        // =============================================
+        (function() {
+            const preloader = document.getElementById('preloader');
+            const preLogo = document.getElementById('pre-logo');
+            const preBar = document.getElementById('pre-bar');
+            const preLabel = document.getElementById('pre-label');
+            if (!preloader) return;
+
+            // Lock scroll during load
+            document.body.style.overflow = 'hidden';
+
+            // Step 1: show logo
+            setTimeout(() => {
+                preLogo.style.opacity = '1';
+                preLogo.style.transform = 'translateY(0)';
+                preLabel.style.opacity = '1';
+            }, 100);
+
+            // Step 2: fill bar
+            setTimeout(() => {
+                preBar.style.width = '100%';
+            }, 200);
+
+            // Step 3: slide preloader UP and reveal site
+            setTimeout(() => {
+                preloader.style.transition = 'transform 0.9s cubic-bezier(0.76,0,0.24,1)';
+                preloader.style.transform = 'translateY(-100%)';
+                document.body.style.overflow = '';
+            }, 1800);
+
+            // Step 4: remove preloader from DOM
+            setTimeout(() => {
+                preloader.remove();
+                ScrollTrigger.refresh();
+            }, 2800);
+        })();
+
         // === REVEAL ON SCROLL (fallback) ===
         // =============================================
         const revealObserver = new IntersectionObserver((entries) => {
