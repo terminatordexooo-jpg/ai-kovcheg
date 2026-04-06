@@ -2642,37 +2642,70 @@
 
         // =============================================
         // =============================================
-        // === PRELOADER ===
+        // === PRELOADER — waits for video ready ===
         // =============================================
         (function() {
             const preloader = document.getElementById('preloader');
-            const preLogo = document.getElementById('pre-logo');
-            const preBar = document.getElementById('pre-bar');
-            const preLabel = document.getElementById('pre-label');
+            const preLogo   = document.getElementById('pre-logo');
+            const preBar    = document.getElementById('pre-bar');
+            const preLabel  = document.getElementById('pre-label');
+            const vid       = document.getElementById('hero-video-bg');
             if (!preloader) return;
 
-            // DO NOT lock scroll — ScrollTrigger needs to measure freely
+            let videoReady = false;
+            let minTimeDone = false;
+            let dismissed = false;
 
-            // Step 1: show logo + label
+            function dismiss() {
+                if (dismissed || !videoReady || !minTimeDone) return;
+                dismissed = true;
+
+                // Fill bar to 100% instantly
+                preBar.style.transition = 'width 0.3s ease';
+                preBar.style.width = '100%';
+
+                setTimeout(() => {
+                    preloader.style.transition = 'transform 1s cubic-bezier(0.76,0,0.24,1)';
+                    preloader.style.transform = 'translateY(-100%)';
+                    ScrollTrigger.refresh();
+                }, 350);
+
+                setTimeout(() => { preloader.remove(); }, 1400);
+            }
+
+            // Show logo immediately
             setTimeout(() => {
                 preLogo.style.opacity = '1';
                 preLogo.style.transform = 'translateY(0)';
                 preLabel.style.opacity = '1';
             }, 80);
 
-            // Step 2: fill progress bar
-            setTimeout(() => { preBar.style.width = '100%'; }, 150);
+            // Animate bar to ~85% over 2.5s (looks like loading)
+            setTimeout(() => { preBar.style.width = '85%'; }, 150);
 
-            // Step 3: slide preloader UP — scroll animation starts working
+            // Minimum display time: 2.5s
             setTimeout(() => {
-                preloader.style.transition = 'transform 0.85s cubic-bezier(0.76,0,0.24,1)';
-                preloader.style.transform = 'translateY(-100%)';
-                // Refresh ScrollTrigger so pin recalculates with correct layout
-                ScrollTrigger.refresh();
-            }, 1700);
+                minTimeDone = true;
+                dismiss();
+            }, 2500);
 
-            // Step 4: remove from DOM
-            setTimeout(() => { preloader.remove(); }, 2600);
+            // Wait for video buffered enough to play smoothly
+            function onVideoReady() {
+                videoReady = true;
+                dismiss();
+            }
+
+            if (vid) {
+                if (vid.readyState >= 4) {
+                    onVideoReady();
+                } else {
+                    vid.addEventListener('canplaythrough', onVideoReady, { once: true });
+                    // Safety: max wait 5s even if video never fires
+                    setTimeout(onVideoReady, 5000);
+                }
+            } else {
+                videoReady = true;
+            }
         })();
 
         // === REVEAL ON SCROLL (fallback) ===
