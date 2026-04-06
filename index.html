@@ -149,8 +149,8 @@
         }
 
         .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(40px);
+            opacity: 1;
+            transform: translateY(0);
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -2179,11 +2179,8 @@
                     scrollTrigger: {
                         trigger: '#hero-section',
                         start: 'top top',
-                        end: '+=150%',
-                        pin: true,
-                        pinSpacing: true,
+                        end: '+=80%',
                         scrub: 0.5,
-                        anticipatePin: 1,
                     }
                 });
 
