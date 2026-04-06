@@ -572,11 +572,9 @@
 
     <!-- 2. HERO -->
     <section id="hero-section" class="hero-section h-screen min-h-[600px] flex items-center pt-20 pb-10 px-4 md:px-6 relative overflow-hidden">
-        <!-- Video Background — FULL SCREEN -->
+        <!-- Canvas Background — frame-by-frame scroll scrub -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0; background: #050505;">
-            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
-                <source src="hero_scroll_fast.mp4" type="video/mp4">
-            </video>
+            <canvas id="hero-canvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.85;"></canvas>
             <!-- Dark overlay so text is readable -->
             <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/50 via-[#050505]/30 to-[#050505]/90"></div>
         </div>
@@ -2187,51 +2185,61 @@
             });
         }
 
-        // Hero scroll scrub — called after preloader exits
+        // Hero scroll scrub — canvas frame scrubbing (Apple-style, zero seek lag)
         window._initHeroScrub = function() {
             if (isMobile) return;
-            const heroVideo = document.getElementById('hero-video-bg');
-            if (!heroVideo) return;
+            const canvas = document.getElementById('hero-canvas');
+            if (!canvas || !window._heroFrames || !window._heroFrames.length) return;
 
-            function setup() {
-                const dur = heroVideo.duration;
-                if (!dur || isNaN(dur) || dur === Infinity) return;
+            const ctx = canvas.getContext('2d');
+            const frames = window._heroFrames;
+            const frameCount = frames.length;
+            let currentIndex = 0;
 
-                // Play briefly so browser renders first frame, then switch to scrub
-                heroVideo.play().catch(() => {});
-                setTimeout(() => {
-                    heroVideo.pause();
-                    heroVideo.removeAttribute('loop');
-                }, 300);
-
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: '#hero-section',
-                        start: 'top top',
-                        end: '+=120%',
-                        pin: true,
-                        pinSpacing: true,
-                        scrub: 1,
-                        anticipatePin: 1,
-                    }
-                });
-
-                const v = { t: 0 };
-                tl.to(v, { t: dur, ease: 'none', duration: 1, onUpdate: () => { heroVideo.currentTime = v.t; } }, 0);
-                tl.to('#hero-section .space-y-10', { y: -100, opacity: 0, duration: 0.25 }, 0.15);
-                tl.to('.hero-scale-in', { x: 100, opacity: 0, duration: 0.25 }, 0.18);
-                tl.to('#scroll-down-indicator', { opacity: 0, duration: 0.1 }, 0.05);
-                tl.to('#hero-section', { opacity: 0, duration: 0.15 }, 0.82);
-
-                ScrollTrigger.refresh();
+            function resizeCanvas() {
+                canvas.width = canvas.clientWidth || window.innerWidth;
+                canvas.height = canvas.clientHeight || window.innerHeight;
+                drawFrame(currentIndex);
             }
 
-            if (heroVideo.duration > 0) {
-                setup();
-            } else {
-                heroVideo.addEventListener('loadedmetadata', setup, { once: true });
-                heroVideo.addEventListener('canplaythrough', setup, { once: true });
+            function drawFrame(index) {
+                currentIndex = Math.max(0, Math.min(frameCount - 1, index));
+                const img = frames[currentIndex];
+                if (!img || !img.complete || !img.naturalWidth) return;
+                const cw = canvas.width, ch = canvas.height;
+                const iw = img.naturalWidth, ih = img.naturalHeight;
+                const scale = Math.max(cw / iw, ch / ih);
+                const dx = (cw - iw * scale) / 2;
+                const dy = (ch - ih * scale) / 2;
+                ctx.clearRect(0, 0, cw, ch);
+                ctx.drawImage(img, dx, dy, iw * scale, ih * scale);
             }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const v = { progress: 0 };
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: '#hero-section',
+                    start: 'top top',
+                    end: '+=120%',
+                    pin: true,
+                    pinSpacing: true,
+                    scrub: 0.8,
+                    anticipatePin: 1,
+                }
+            });
+
+            tl.to(v, { progress: 1, ease: 'none', duration: 1, onUpdate: () => {
+                drawFrame(Math.round(v.progress * (frameCount - 1)));
+            }}, 0);
+            tl.to('#hero-section .space-y-10', { y: -100, opacity: 0, duration: 0.25 }, 0.15);
+            tl.to('.hero-scale-in', { x: 100, opacity: 0, duration: 0.25 }, 0.18);
+            tl.to('#scroll-down-indicator', { opacity: 0, duration: 0.1 }, 0.05);
+            tl.to('#hero-section', { opacity: 0, duration: 0.15 }, 0.82);
+
+            ScrollTrigger.refresh();
         };
 
         // =============================================
@@ -2649,24 +2657,39 @@
         }
 
         // =============================================
-        // =============================================
-        // === PRELOADER — waits for video ready ===
+        // === PRELOADER — preloads all canvas frames ===
         // =============================================
         (function() {
             const preloader = document.getElementById('preloader');
             const preLogo   = document.getElementById('pre-logo');
             const preBar    = document.getElementById('pre-bar');
             const preLabel  = document.getElementById('pre-label');
-            const vid       = document.getElementById('hero-video-bg');
             if (!preloader) return;
 
+            const FRAME_COUNT = 60;
+            const frames = [];
+            let loadedCount = 0;
             let dismissed = false;
 
             function dismiss() {
                 if (dismissed) return;
                 dismissed = true;
+                window._heroFrames = frames;
                 preBar.style.transition = 'width 0.4s ease';
                 preBar.style.width = '100%';
+
+                // Draw first frame immediately so canvas isn't blank
+                const canvas = document.getElementById('hero-canvas');
+                if (canvas && frames[0] && frames[0].complete) {
+                    canvas.width = canvas.clientWidth || window.innerWidth;
+                    canvas.height = canvas.clientHeight || window.innerHeight;
+                    const ctx = canvas.getContext('2d');
+                    const img = frames[0];
+                    const cw = canvas.width, ch = canvas.height;
+                    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+                    ctx.drawImage(img, (cw - img.naturalWidth * scale) / 2, (ch - img.naturalHeight * scale) / 2, img.naturalWidth * scale, img.naturalHeight * scale);
+                }
+
                 setTimeout(() => {
                     preloader.style.transition = 'transform 1s cubic-bezier(0.76,0,0.24,1)';
                     preloader.style.transform = 'translateY(-100%)';
@@ -2678,34 +2701,29 @@
                 }, 1450);
             }
 
-            // Show logo immediately
+            // Show logo
             setTimeout(() => {
                 preLogo.style.opacity = '1';
                 preLogo.style.transform = 'translateY(0)';
                 preLabel.style.opacity = '1';
             }, 80);
 
-            // Real progress bar from video buffering
-            if (vid) {
-                vid.addEventListener('progress', () => {
-                    if (vid.duration > 0 && vid.buffered.length > 0) {
-                        const pct = Math.min(92, (vid.buffered.end(vid.buffered.length - 1) / vid.duration) * 100);
-                        preBar.style.transition = 'width 0.5s ease';
-                        preBar.style.width = pct + '%';
-                    }
-                });
-
-                // Video ready — open site
-                if (vid.readyState >= 4) {
-                    dismiss();
-                } else {
-                    vid.addEventListener('canplaythrough', dismiss, { once: true });
-                    // Safety: max 10s
-                    setTimeout(dismiss, 10000);
-                }
-            } else {
-                setTimeout(dismiss, 1500);
+            // Preload all 60 frames — show real progress
+            for (let i = 1; i <= FRAME_COUNT; i++) {
+                const img = new Image();
+                img.src = 'frames/f' + String(i).padStart(3, '0') + '.jpg';
+                img.onload = img.onerror = function() {
+                    loadedCount++;
+                    const pct = Math.min(93, Math.round((loadedCount / FRAME_COUNT) * 100));
+                    preBar.style.transition = 'width 0.2s ease';
+                    preBar.style.width = pct + '%';
+                    if (loadedCount >= FRAME_COUNT) dismiss();
+                };
+                frames[i - 1] = img;
             }
+
+            // Safety timeout
+            setTimeout(dismiss, 20000);
         })();
 
         // === REVEAL ON SCROLL (fallback) ===
