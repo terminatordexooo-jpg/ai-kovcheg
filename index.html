@@ -2660,47 +2660,52 @@
             const vid       = document.getElementById('hero-video-bg');
             if (!preloader) return;
 
-            let videoReady = false;
-            let minTimeDone = false;
             let dismissed = false;
 
             function dismiss() {
-                if (dismissed || !videoReady || !minTimeDone) return;
+                if (dismissed) return;
                 dismissed = true;
-
-                // Fill bar to 100% instantly
-                preBar.style.transition = 'width 0.3s ease';
+                preBar.style.transition = 'width 0.4s ease';
                 preBar.style.width = '100%';
-
                 setTimeout(() => {
                     preloader.style.transition = 'transform 1s cubic-bezier(0.76,0,0.24,1)';
                     preloader.style.transform = 'translateY(-100%)';
                     ScrollTrigger.refresh();
-                }, 350);
-
+                }, 400);
                 setTimeout(() => {
                     preloader.remove();
                     if (window._initHeroScrub) window._initHeroScrub();
-                }, 1400);
+                }, 1450);
             }
 
-            // Show logo
+            // Show logo immediately
             setTimeout(() => {
                 preLogo.style.opacity = '1';
                 preLogo.style.transform = 'translateY(0)';
                 preLabel.style.opacity = '1';
             }, 80);
 
-            // Fill bar
-            setTimeout(() => { preBar.style.width = '100%'; }, 150);
+            // Real progress bar from video buffering
+            if (vid) {
+                vid.addEventListener('progress', () => {
+                    if (vid.duration > 0 && vid.buffered.length > 0) {
+                        const pct = Math.min(92, (vid.buffered.end(vid.buffered.length - 1) / vid.duration) * 100);
+                        preBar.style.transition = 'width 0.5s ease';
+                        preBar.style.width = pct + '%';
+                    }
+                });
 
-            // Exit after 1.5s — fast, no waiting
-            videoReady = true;
-            minTimeDone = false;
-            setTimeout(() => {
-                minTimeDone = true;
-                dismiss();
-            }, 1500);
+                // Video ready — open site
+                if (vid.readyState >= 4) {
+                    dismiss();
+                } else {
+                    vid.addEventListener('canplaythrough', dismiss, { once: true });
+                    // Safety: max 10s
+                    setTimeout(dismiss, 10000);
+                }
+            } else {
+                setTimeout(dismiss, 1500);
+            }
         })();
 
         // === REVEAL ON SCROLL (fallback) ===
