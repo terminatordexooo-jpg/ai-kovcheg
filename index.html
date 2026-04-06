@@ -2227,15 +2227,18 @@
             window.addEventListener('resize', resizeCanvas);
 
             const v = { progress: 0 };
+            const heroEl = document.getElementById('hero-section');
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: '#hero-section',
                     start: 'top top',
-                    end: '+=120%',
+                    end: '+=220%',
                     pin: true,
                     pinSpacing: true,
                     scrub: 0.5,
                     anticipatePin: 1,
+                    onLeave: () => { if (heroEl) heroEl.style.visibility = 'hidden'; },
+                    onEnterBack: () => { if (heroEl) heroEl.style.visibility = 'visible'; },
                 }
             });
 
