@@ -574,7 +574,7 @@
     <section id="hero-section" class="hero-section h-screen min-h-[600px] flex items-center pt-20 pb-10 px-4 md:px-6 relative overflow-hidden">
         <!-- Video Background — FULL SCREEN -->
         <div id="hero-video-wrapper" class="absolute inset-0 overflow-hidden" style="z-index: 0; background: #050505;">
-            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" poster="hero_source.jpg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
+            <video id="hero-video-bg" autoplay muted loop playsinline preload="auto" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover" style="opacity: 0.85;">
                 <source src="hero_scroll_hq.mp4" type="video/mp4">
             </video>
             <!-- Dark overlay so text is readable -->
@@ -2197,8 +2197,12 @@
                 const dur = heroVideo.duration;
                 if (!dur || isNaN(dur) || dur === Infinity) return;
 
-                heroVideo.pause();
-                heroVideo.currentTime = 0.01;
+                // Play briefly so browser renders first frame, then switch to scrub
+                heroVideo.play().catch(() => {});
+                setTimeout(() => {
+                    heroVideo.pause();
+                    heroVideo.removeAttribute('loop');
+                }, 300);
 
                 const tl = gsap.timeline({
                     scrollTrigger: {
