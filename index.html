@@ -2763,22 +2763,36 @@
                 preLabel.style.opacity = '1';
             }, 80);
 
-            // Preload all 60 frames — show real progress
-            for (let i = 1; i <= FRAME_COUNT; i++) {
+            // Progressive: open site after first 20 frames, load rest in background
+            const FIRST_BATCH = 20;
+            let firstBatchLoaded = 0;
+
+            function loadFrame(i) {
                 const img = new Image();
-                img.src = 'frames/f' + String(i).padStart(3, '0') + '.jpg';
+                img.src = 'frames/f' + String(i).padStart(3, '0') + '.webp';
                 img.onload = img.onerror = function() {
                     loadedCount++;
                     const pct = Math.min(93, Math.round((loadedCount / FRAME_COUNT) * 100));
                     preBar.style.transition = 'width 0.2s ease';
                     preBar.style.width = pct + '%';
-                    if (loadedCount >= FRAME_COUNT) dismiss();
+                    // Open site after first 20 frames ready
+                    if (i <= FIRST_BATCH) {
+                        firstBatchLoaded++;
+                        if (firstBatchLoaded >= FIRST_BATCH) dismiss();
+                    }
                 };
                 frames[i - 1] = img;
             }
 
+            // Load first 20 frames immediately (priority)
+            for (let i = 1; i <= FIRST_BATCH; i++) loadFrame(i);
+            // Load remaining frames after a tiny delay (don't block first batch)
+            setTimeout(() => {
+                for (let i = FIRST_BATCH + 1; i <= FRAME_COUNT; i++) loadFrame(i);
+            }, 100);
+
             // Safety timeout
-            setTimeout(dismiss, 20000);
+            setTimeout(dismiss, 15000);
         })();
 
         // === REVEAL ON SCROLL (fallback) ===
