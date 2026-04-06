@@ -2718,7 +2718,7 @@
             const preLabel  = document.getElementById('pre-label');
             if (!preloader) return;
 
-            const FRAME_COUNT = 60;
+            const FRAME_COUNT = 30;
             const frames = [];
             let loadedCount = 0;
             let dismissed = false;
@@ -2764,7 +2764,7 @@
             }, 80);
 
             // Progressive: open site after first 20 frames, load rest in background
-            const FIRST_BATCH = 20;
+            const FIRST_BATCH = 8;
             let firstBatchLoaded = 0;
 
             function loadFrame(i) {
