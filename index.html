@@ -2185,9 +2185,48 @@
             });
         }
 
+        // Mobile: auto-animate canvas frames as looping cinematic
+        window._initMobileHero = function() {
+            const canvas = document.getElementById('hero-canvas');
+            if (!canvas || !window._heroFrames || !window._heroFrames.length) return;
+            const ctx = canvas.getContext('2d');
+            const frames = window._heroFrames;
+            const frameCount = frames.length;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = (canvas.clientWidth || window.innerWidth) * dpr;
+            canvas.height = (canvas.clientHeight || window.innerHeight) * dpr;
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            function drawMobileFrame(index) {
+                const img = frames[Math.max(0, Math.min(frameCount - 1, index))];
+                if (!img || !img.complete || !img.naturalWidth) return;
+                const cw = canvas.width, ch = canvas.height;
+                const iw = img.naturalWidth, ih = img.naturalHeight;
+                const scale = Math.max(cw / iw, ch / ih);
+                ctx.clearRect(0, 0, cw, ch);
+                ctx.drawImage(img, (cw - iw * scale) / 2, (ch - ih * scale) / 2, iw * scale, ih * scale);
+            }
+
+            let idx = 0;
+            let lastTime = 0;
+            const FPS = 10;
+            const interval = 1000 / FPS;
+            function loop(ts) {
+                if (ts - lastTime >= interval) {
+                    drawMobileFrame(idx);
+                    idx = (idx + 1) % frameCount;
+                    lastTime = ts;
+                }
+                requestAnimationFrame(loop);
+            }
+            drawMobileFrame(0);
+            requestAnimationFrame(loop);
+        };
+
         // Hero scroll scrub — canvas frame scrubbing (Apple-style, zero seek lag)
         window._initHeroScrub = function() {
-            if (isMobile) return;
+            if (isMobile) { window._initMobileHero(); return; }
             const canvas = document.getElementById('hero-canvas');
             if (!canvas || !window._heroFrames || !window._heroFrames.length) return;
 
@@ -2545,20 +2584,24 @@
         });
 
         // =============================================
-        // === STUDENT PROJECTS — cascade reveal ===
+        // === STUDENT PROJECTS — dramatic cascade ===
         // =============================================
-        document.querySelectorAll('.float-card').forEach((card, i) => {
-            const dir = i % 3 === 0 ? -80 : i % 3 === 1 ? 0 : 80;
-            gsap.from(card, {
-                x: dir, y: 80, opacity: 0, scale: 0.88,
-                scrollTrigger: {
-                    trigger: card,
-                    start: 'top 92%',
-                    end: 'top 55%',
-                    scrub: 1
+        (function() {
+            const projectCards = Array.from(document.querySelectorAll('.float-card'));
+            if (!projectCards.length) return;
+            gsap.set(projectCards, { opacity: 0, y: 80, scale: 0.85, rotateX: 20, transformPerspective: 800 });
+            ScrollTrigger.batch(projectCards, {
+                start: 'top 95%',
+                once: true,
+                onEnter: batch => {
+                    gsap.to(batch, {
+                        opacity: 1, y: 0, scale: 1, rotateX: 0,
+                        duration: 0.9, stagger: 0.13, ease: 'power3.out',
+                        clearProps: 'transform,rotateX,scale'
+                    });
                 }
             });
-        });
+        })();
 
         // =============================================
         // === 27 AI EMPLOYEES — grid wave stagger ===
