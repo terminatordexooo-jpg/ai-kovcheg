@@ -2248,15 +2248,15 @@
 
             function drawFrame(index) {
                 currentIndex = Math.max(0, Math.min(frameCount - 1, index));
-                const img = frames[currentIndex];
-                if (!img || !img.complete || !img.naturalWidth) return;
+                const bmp = frames[currentIndex];
+                if (!bmp || !bmp.width) return;
                 const cw = canvas.width, ch = canvas.height;
-                const iw = img.naturalWidth, ih = img.naturalHeight;
+                const iw = bmp.width, ih = bmp.height;
                 const scale = Math.max(cw / iw, ch / ih);
                 ctx.clearRect(0, 0, cw, ch);
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(img, (cw - iw * scale) / 2, (ch - ih * scale) / 2, iw * scale, ih * scale);
+                ctx.drawImage(bmp, (cw - iw * scale) / 2, (ch - ih * scale) / 2, iw * scale, ih * scale);
             }
 
             resizeCanvas();
@@ -2719,15 +2719,14 @@
             if (!preloader) return;
 
             const FRAME_COUNT = 121;
-            const frames = [];
-            let loadedCount = 0;
+            const frames = []; // will hold ImageBitmap objects (GPU-decoded)
             let dismissed = false;
 
             function dismiss() {
                 if (dismissed) return;
                 dismissed = true;
                 window._heroFrames = frames;
-                preBar.style.transition = 'width 0.4s ease';
+                preBar.style.transition = 'width 0.3s ease';
                 preBar.style.width = '100%';
 
                 setTimeout(() => {
@@ -2737,19 +2736,18 @@
                 }, 400);
                 setTimeout(() => {
                     preloader.remove();
-                    // Draw first frame now that canvas has real dimensions
                     const canvas = document.getElementById('hero-canvas');
-                    if (canvas && frames[0] && frames[0].complete) {
+                    if (canvas && frames[0]) {
                         const _dpr = window.devicePixelRatio || 1;
                         canvas.width = (canvas.clientWidth || window.innerWidth) * _dpr;
                         canvas.height = (canvas.clientHeight || window.innerHeight) * _dpr;
                         const ctx = canvas.getContext('2d');
                         ctx.imageSmoothingEnabled = true;
                         ctx.imageSmoothingQuality = 'high';
-                        const img = frames[0];
+                        const bmp = frames[0];
                         const cw = canvas.width, ch = canvas.height;
-                        const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
-                        ctx.drawImage(img, (cw - img.naturalWidth * scale) / 2, (ch - img.naturalHeight * scale) / 2, img.naturalWidth * scale, img.naturalHeight * scale);
+                        const scale = Math.max(cw / bmp.width, ch / bmp.height);
+                        ctx.drawImage(bmp, (cw - bmp.width * scale) / 2, (ch - bmp.height * scale) / 2, bmp.width * scale, bmp.height * scale);
                     }
                     if (window._initHeroScrub) window._initHeroScrub();
                 }, 1450);
@@ -2762,22 +2760,31 @@
                 preLabel.style.opacity = '1';
             }, 80);
 
-            // Load ALL frames before opening — smooth scroll from the start
+            // Load + GPU-decode ALL frames before opening
+            // createImageBitmap decodes into GPU memory — zero stutter on scrub
+            let loadedCount = 0;
             for (let i = 1; i <= FRAME_COUNT; i++) {
-                const img = new Image();
-                img.src = 'frames/f' + String(i).padStart(3, '0') + '.webp';
-                img.onload = img.onerror = function() {
-                    loadedCount++;
-                    const pct = Math.round((loadedCount / FRAME_COUNT) * 100);
-                    preBar.style.transition = 'width 0.3s ease';
-                    preBar.style.width = pct + '%';
-                    if (loadedCount >= FRAME_COUNT) dismiss();
-                };
-                frames[i - 1] = img;
+                (function(idx) {
+                    fetch('frames/f' + String(idx).padStart(3, '0') + '.webp')
+                        .then(r => r.blob())
+                        .then(blob => createImageBitmap(blob))
+                        .then(bmp => {
+                            frames[idx - 1] = bmp;
+                            loadedCount++;
+                            const pct = Math.round((loadedCount / FRAME_COUNT) * 100);
+                            preBar.style.transition = 'width 0.3s ease';
+                            preBar.style.width = pct + '%';
+                            if (loadedCount >= FRAME_COUNT) dismiss();
+                        })
+                        .catch(() => {
+                            loadedCount++;
+                            if (loadedCount >= FRAME_COUNT) dismiss();
+                        });
+                })(i);
             }
 
-            // Safety timeout 60s
-            setTimeout(dismiss, 60000);
+            // Safety timeout 90s
+            setTimeout(dismiss, 90000);
         })();
 
         // === REVEAL ON SCROLL (fallback) ===
