@@ -2196,9 +2196,15 @@
             const frameCount = frames.length;
             let currentIndex = 0;
 
+            const dpr = window.devicePixelRatio || 1;
+
             function resizeCanvas() {
-                canvas.width = canvas.clientWidth || window.innerWidth;
-                canvas.height = canvas.clientHeight || window.innerHeight;
+                const w = canvas.clientWidth || window.innerWidth;
+                const h = canvas.clientHeight || window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 drawFrame(currentIndex);
             }
 
@@ -2212,6 +2218,8 @@
                 const dx = (cw - iw * scale) / 2;
                 const dy = (ch - ih * scale) / 2;
                 ctx.clearRect(0, 0, cw, ch);
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, dx, dy, iw * scale, ih * scale);
             }
 
@@ -2681,9 +2689,12 @@
                 // Draw first frame immediately so canvas isn't blank
                 const canvas = document.getElementById('hero-canvas');
                 if (canvas && frames[0] && frames[0].complete) {
-                    canvas.width = canvas.clientWidth || window.innerWidth;
-                    canvas.height = canvas.clientHeight || window.innerHeight;
+                    const _dpr = window.devicePixelRatio || 1;
+                    canvas.width = (canvas.clientWidth || window.innerWidth) * _dpr;
+                    canvas.height = (canvas.clientHeight || window.innerHeight) * _dpr;
                     const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     const img = frames[0];
                     const cw = canvas.width, ch = canvas.height;
                     const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
