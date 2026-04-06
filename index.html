@@ -2189,41 +2189,31 @@
         }
 
         // =============================================
-        // === SCROLL-DRIVEN VIDEO (desktop) / AUTOPLAY PARALLAX (mobile) ===
+        // === HERO SCROLL PIN (desktop only) ===
         // =============================================
-        // =============================================
-        // === HERO SCROLL PIN — runs immediately, no video dependency ===
-        // =============================================
-        const heroScrollTL = gsap.timeline({
-            scrollTrigger: {
-                trigger: '#hero-section',
-                start: 'top top',
-                end: '+=50%',
-                pin: true,
-                pinSpacing: true,
-                scrub: 0.8,
-                anticipatePin: 1,
-            }
-        });
+        if (!isMobile) {
+            const heroScrollTL = gsap.timeline({
+                scrollTrigger: {
+                    trigger: '#hero-section',
+                    start: 'top top',
+                    end: '+=50%',
+                    pin: true,
+                    pinSpacing: true,
+                    scrub: 0.8,
+                    anticipatePin: 1,
+                }
+            });
 
-        // Left content flies up+out
-        heroScrollTL.to('#hero-section .space-y-10', {
-            y: -80, opacity: 0, ease: 'power2.in', duration: 0.5
-        }, 0);
-        // Right mockup flies right+out
-        heroScrollTL.to('.hero-scale-in', {
-            x: 80, opacity: 0, ease: 'power2.in', duration: 0.5
-        }, 0.05);
-        heroScrollTL.to('#scroll-down-indicator', { opacity: 0, duration: 0.1 }, 0);
-        // Whole section fades → reveals next section under
-        heroScrollTL.to('#hero-section', {
-            opacity: 0, duration: 0.35, ease: 'power2.in'
-        }, 0.6);
-
-        // Video just autoplays — no scrub needed
-        const heroVideo = document.getElementById('hero-video-bg');
-        if (heroVideo) {
-            heroVideo.play().catch(() => {});
+            heroScrollTL.to('#hero-section .space-y-10', {
+                y: -80, opacity: 0, ease: 'power2.in', duration: 0.5
+            }, 0);
+            heroScrollTL.to('.hero-scale-in', {
+                x: 80, opacity: 0, ease: 'power2.in', duration: 0.5
+            }, 0.05);
+            heroScrollTL.to('#scroll-down-indicator', { opacity: 0, duration: 0.1 }, 0);
+            heroScrollTL.to('#hero-section', {
+                opacity: 0, duration: 0.35, ease: 'power2.in'
+            }, 0.6);
         }
 
         // =============================================
@@ -2740,39 +2730,7 @@
             });
         });
 
-        // === MOBILE SCROLL VIDEO — use scrub on mobile too ===
-        if (isMobile) {
-            const heroVideoMob = document.getElementById('hero-video-bg');
-            let mobileScrollReady = false;
-            function initMobileScrollVideo() {
-                if (mobileScrollReady) return;
-                const dur = heroVideoMob.duration;
-                if (!dur || isNaN(dur) || dur === Infinity || dur === 0) return;
-                mobileScrollReady = true;
-                heroVideoMob.removeAttribute('autoplay');
-                heroVideoMob.removeAttribute('loop');
-                heroVideoMob.pause();
-                heroVideoMob.currentTime = 0;
-                const mobTL = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: '#hero-section',
-                        start: 'top top',
-                        end: '+=120%',
-                        pin: true,
-                        pinSpacing: true,
-                        scrub: 0.5,
-                    }
-                });
-                const vObj = { t: 0 };
-                mobTL.to(vObj, { t: dur, ease: 'none', duration: 1, onUpdate: () => { heroVideoMob.currentTime = vObj.t; } }, 0);
-                mobTL.to('#hero-section .space-y-10', { y: -60, opacity: 0, duration: 0.3 }, 0.2);
-                mobTL.to('#hero-video-wrapper', { opacity: 0, duration: 0.2 }, 0.8);
-                setTimeout(() => ScrollTrigger.refresh(), 100);
-            }
-            heroVideoMob.addEventListener('loadedmetadata', () => initMobileScrollVideo(), { once: true });
-            heroVideoMob.addEventListener('canplaythrough', () => initMobileScrollVideo(), { once: true });
-            if (heroVideoMob.readyState >= 1 && heroVideoMob.duration > 0) initMobileScrollVideo();
-        }
+        // Mobile: video just autoplays, no scrub conflict
     </script>
 </body>
 </html>
