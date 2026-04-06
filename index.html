@@ -2730,21 +2730,6 @@
                 preBar.style.transition = 'width 0.4s ease';
                 preBar.style.width = '100%';
 
-                // Draw first frame immediately so canvas isn't blank
-                const canvas = document.getElementById('hero-canvas');
-                if (canvas && frames[0] && frames[0].complete) {
-                    const _dpr = window.devicePixelRatio || 1;
-                    canvas.width = (canvas.clientWidth || window.innerWidth) * _dpr;
-                    canvas.height = (canvas.clientHeight || window.innerHeight) * _dpr;
-                    const ctx = canvas.getContext('2d');
-                    ctx.imageSmoothingEnabled = true;
-                    ctx.imageSmoothingQuality = 'high';
-                    const img = frames[0];
-                    const cw = canvas.width, ch = canvas.height;
-                    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
-                    ctx.drawImage(img, (cw - img.naturalWidth * scale) / 2, (ch - img.naturalHeight * scale) / 2, img.naturalWidth * scale, img.naturalHeight * scale);
-                }
-
                 setTimeout(() => {
                     preloader.style.transition = 'transform 1s cubic-bezier(0.76,0,0.24,1)';
                     preloader.style.transform = 'translateY(-100%)';
@@ -2752,6 +2737,20 @@
                 }, 400);
                 setTimeout(() => {
                     preloader.remove();
+                    // Draw first frame now that canvas has real dimensions
+                    const canvas = document.getElementById('hero-canvas');
+                    if (canvas && frames[0] && frames[0].complete) {
+                        const _dpr = window.devicePixelRatio || 1;
+                        canvas.width = (canvas.clientWidth || window.innerWidth) * _dpr;
+                        canvas.height = (canvas.clientHeight || window.innerHeight) * _dpr;
+                        const ctx = canvas.getContext('2d');
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        const img = frames[0];
+                        const cw = canvas.width, ch = canvas.height;
+                        const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+                        ctx.drawImage(img, (cw - img.naturalWidth * scale) / 2, (ch - img.naturalHeight * scale) / 2, img.naturalWidth * scale, img.naturalHeight * scale);
+                    }
                     if (window._initHeroScrub) window._initHeroScrub();
                 }, 1450);
             }
